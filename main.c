@@ -13,31 +13,32 @@ typedef struct Object {
     void* value;
 } Object;
 
-Object* object(int type, void* value) {
+Object object(int type, void* value) {
     Object *object = malloc(sizeof(Object));
     object->type  = type;
     object->value = value;
 
-    return object;
+    return *object;
 }
 
-Object* integer_object(int x) {
+Object integer_object(int x) {
+    printf("Integer: %d\n", x);
     return object(TYPE_INT, &x);
 }
 
-Object* float_object(float x) {
+Object float_object(double x) {
     return object(TYPE_FLOAT, &x); 
 }
 
-Object* char_object(char x) {
+Object char_object(char x) {
     return object(TYPE_CHAR, &x);
 }
 
-Object* string_object(char* x) {
+Object string_object(char* x) {
     return object(TYPE_STRING, &x);
 }
 
-Object* symbol_object(char* x) {
+Object symbol_object(char* x) {
     return object(TYPE_SYMBOL, &x);
 }
 
@@ -46,7 +47,7 @@ typedef struct Cons {
     struct Object* cdr;
 } Cons;
 
-Object* cons(Object* x, Object* xs) {
+Object cons(Object* x, Object* xs) {
     Cons *cell = malloc(sizeof(Cons));
     cell->car = x;
     cell->cdr = xs;
@@ -67,23 +68,23 @@ Object* next(Object *xs) {
     return cell->cdr;
 }
 
-void print_integer(Object* object) {
-    int x = *(int *)object->value;
-    printf("%d", x);
-}
-
-void print_float(Object* object) {
-    float x = *(float *)object->value;
+void print_float(Object object) {
+    double x = *((double*)(object.value));
     printf("%f", x);
 }
 
-void print_char(Object* object) {
-    char x = *(char *)object->value;
+void print_char(Object object) {
+    char x = *((char *)(object.value));
     printf("%c", x);
 }
 
-void print(Object *object) {
-    switch(object->type) {
+void print_integer(Object object) {
+    int x = *((int*)(object.value));
+    printf("%d", x);
+}
+
+void print(Object object) {
+    switch(object.type) {
         case TYPE_INT:
             print_integer(object);
             break;
@@ -99,7 +100,7 @@ void print(Object *object) {
     }
 }
 
-void destroy_object(Object* object) {
+void destroy_object(Object *object) {
     if (object) {
         free(object);
         if (object->type == TYPE_CONS)
@@ -108,7 +109,10 @@ void destroy_object(Object* object) {
 }
 
 int main(int argc, char* argv[]) {
-    print(char_object('b'));
+    Object obj = integer_object(1);
+    print_integer(obj);
+    //printf("\n");
+    //print(float_object(0.9));
 
     return 0;
 }
