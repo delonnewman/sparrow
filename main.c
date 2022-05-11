@@ -13,35 +13,35 @@ typedef struct Object {
     void* value;
 } Object;
 
-Object object(int type, void* value) {
+Object* object(int type, void* value) {
     Object* object = malloc(sizeof(Object));
     object->type  = type;
     object->value = value;
 
-    return *object;
+    return object;
 }
 
-Object integer_object(int x) {
+Object* integer_object(int x) {
     return object(TYPE_INT, &x);
 }
 
-/*
-Object float_object(double x) {
+Object* float_object(double x) {
     return object(TYPE_FLOAT, &x); 
 }
 
-Object char_object(char x) {
+Object* char_object(char x) {
     return object(TYPE_CHAR, &x);
 }
 
-Object string_object(char* x) {
+Object* string_object(char* x) {
     return object(TYPE_STRING, &x);
 }
 
-Object symbol_object(char* x) {
+Object* symbol_object(char* x) {
     return object(TYPE_SYMBOL, &x);
 }
 
+/*
 typedef struct Cons {
     Object* car;
     struct Object* cdr;
@@ -67,33 +67,33 @@ Object* next(Object *xs) {
     Cons* cell = xs->value;
     return cell->cdr;
 }
+*/
 
-void print_float(Object object) {
-    double x = *((double*)(object.value));
+void print_float(Object** object) {
+  double x = *((double*)((*object)->value));
     printf("%f", x);
 }
 
-void print_char(Object object) {
-    char x = *((char *)(object.value));
+void print_char(Object** object) {
+    char x = *((char *)((*object)->value));
     printf("%c", x);
 }
-*/
 
-void print_integer(Object* object) {
-    int x = *((int*)(object->value));
-    printf("%d", x);
+void print_integer(Object** object) {
+    int* x = (int*)((*object)->value);
+    printf("%d", *x);
 }
 
-void print(Object* object) {
-    switch(object->type) {
+void print(Object** object) {
+  switch((*object)->type) {
         case TYPE_INT:
             print_integer(object);
             break;
         case TYPE_FLOAT:
-          //print_float(*object);
+            print_float(object);
             break;
         case TYPE_CHAR:
-          //print_char(*object);
+            print_char(object);
             break;
         default:
             puts("Error: Unknown object");
@@ -112,8 +112,11 @@ void destroy_object(Object *object) {
 */
 
 int main(int argc, char* argv[]) {
-    Object obj = integer_object(1);
+    Object* obj = integer_object(1);
+    printf("%d %d", obj->type, *((int*)obj->value));
+    puts("\n");
     print(&obj);
+    //print(&obj);
     //printf("\n");
     //print(float_object(0.9));
 
