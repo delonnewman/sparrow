@@ -14,7 +14,7 @@ typedef struct Object {
 } Object;
 
 Object object(int type, void* value) {
-    Object *object = malloc(sizeof(Object));
+    Object* object = malloc(sizeof(Object));
     object->type  = type;
     object->value = value;
 
@@ -22,10 +22,10 @@ Object object(int type, void* value) {
 }
 
 Object integer_object(int x) {
-    printf("Integer: %d\n", x);
     return object(TYPE_INT, &x);
 }
 
+/*
 Object float_object(double x) {
     return object(TYPE_FLOAT, &x); 
 }
@@ -77,22 +77,23 @@ void print_char(Object object) {
     char x = *((char *)(object.value));
     printf("%c", x);
 }
+*/
 
-void print_integer(Object object) {
-    int x = *((int*)(object.value));
+void print_integer(Object* object) {
+    int x = *((int*)(object->value));
     printf("%d", x);
 }
 
-void print(Object object) {
-    switch(object.type) {
+void print(Object* object) {
+    switch(object->type) {
         case TYPE_INT:
             print_integer(object);
             break;
         case TYPE_FLOAT:
-            print_float(object);
+          //print_float(*object);
             break;
         case TYPE_CHAR:
-            print_char(object);
+          //print_char(*object);
             break;
         default:
             puts("Error: Unknown object");
@@ -100,6 +101,7 @@ void print(Object object) {
     }
 }
 
+/*
 void destroy_object(Object *object) {
     if (object) {
         free(object);
@@ -107,10 +109,11 @@ void destroy_object(Object *object) {
             destroy_object(next(object));
     }
 }
+*/
 
 int main(int argc, char* argv[]) {
     Object obj = integer_object(1);
-    print_integer(obj);
+    print(&obj);
     //printf("\n");
     //print(float_object(0.9));
 
