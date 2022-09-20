@@ -24,7 +24,7 @@ typedef struct Object {
   char* error;
 
   // list count, car and cdr
-  int             count;
+  int            count;
   struct Object* car;
   struct Object* cdr;
 } Object;
