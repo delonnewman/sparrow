@@ -1,141 +1,266 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 enum {
-    TYPE_INT    = 0,
-    TYPE_FLOAT  = 1,
-    TYPE_CHAR   = 2,
-    TYPE_STRING = 3,
-    TYPE_SYMBOL = 4,
-    TYPE_CONS   = 5,
+  TYPE_INT    = 0,
+  TYPE_FLOAT  = 1,
+  TYPE_CHAR   = 2,
+  TYPE_STRING = 3,
+  TYPE_SYMBOL = 4,
+  TYPE_CONS   = 5,
 };
 
-typedef struct {
-    int   type;
-    void* value;
-} obj_t;
+typedef struct Object {
+  int    type;
+  long   int_val;
+  double float_val;
 
-obj_t* object(int type, void* value) {
-    obj_t* object = malloc(sizeof(obj_t));
-    object->type  = type;
-    object->value = value;
+  // strings, symbols
+  char* str_val;
+    
+  // error handling
+  char* error;
 
-    return object;
+  // list count, car and cdr
+  int             count;
+  struct Object* car;
+  struct Object* cdr;
+} Object;
+
+
+void print(Object* obj);
+char* stype(Object* obj);
+
+char* stype(Object* obj) {
+  switch (obj->type) {
+  case TYPE_INT:
+    return "integer";
+  case TYPE_FLOAT:
+    return "float";
+  case TYPE_CHAR:
+    return "char";
+  case TYPE_STRING:
+    return "string";
+  case TYPE_SYMBOL:
+    return "symbol";
+  case TYPE_CONS:
+    return "list";
+  default:
+    puts("Error: Unknown type");
+    exit(0);
+  }
 }
 
-obj_t* integer_object(int x) {
-    return object(TYPE_INT, &x);
+Object* object_allocate() {
+  Object* object = malloc(sizeof(Object));
+  return object;
 }
 
-obj_t* float_object(double x) {
-    return object(TYPE_FLOAT, &x); 
+Object* object_new_integer(long value) {
+  Object* object  = object_allocate();
+  object->type    = TYPE_INT;
+  object->int_val = value;
+
+  return object;
 }
 
-obj_t* char_object(char x) {
-    return object(TYPE_CHAR, &x);
+Object* object_new_float(double value) {
+  Object* object    = object_allocate();
+  object->type      = TYPE_FLOAT;
+  object->float_val = value;
+
+  return object;
 }
 
-obj_t* string_object(char* x) {
-    return object(TYPE_STRING, &x);
+Object* object_new_string(char* value) {
+  Object* object  = object_allocate();
+  object->type    = TYPE_STRING;
+  object->str_val = malloc(strlen(value) + 1);
+  strcpy(object->str_val, value);
+
+  return object;
 }
 
-obj_t* symbol_object(char* x) {
-    return object(TYPE_SYMBOL, &x);
+Object* object_new_symbol(char* value) {
+  Object* object  = object_allocate();
+  object->type    = TYPE_SYMBOL;
+  object->str_val = malloc(strlen(value) + 1);
+  strcpy(object->str_val, value);
+
+  return object;
 }
 
-/*
-typedef struct {
-    obj_t* car;
-    struct obj_t* cdr;
-} Cons;
+void copy_value(Object* target, Object* source) {
+  target->type = source->type;
 
-obj_t cons(obj_t* x, obj_t* xs) {
-    Cons *cell = malloc(sizeof(Cons));
-    cell->car = x;
-    cell->cdr = xs;
-
-    return object(TYPE_CONS, cell);
+  switch (source->type) {
+  case TYPE_INT:
+    target->int_val = source->int_val;
+    break;
+  case TYPE_FLOAT:
+    target->float_val = source->float_val;
+    break;
+  case TYPE_STRING:
+  case TYPE_SYMBOL:
+    target->str_val = malloc(strlen(source->str_val) + 1);
+    strcpy(target->str_val, source->str_val);
+    break;
+  case TYPE_CONS:
+    target->count = source->count;
+    target->car   = source->car;
+    target->cdr   = source->cdr;
+  default:
+    puts("Error: Unknown type");
+    exit(0);
+  }
 }
 
-// TODO: Add error handling
-obj_t* first(obj_t* xs) {
-    Cons* cell = xs->value;
-    if (xs)
-        return cell->car;
-    return NULL;
+bool list_is_empty(Object* xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: can only determine if lists are empty got %s instead", stype(xs));
+    exit(0);
+  }
+
+  return xs->count == 0;
 }
 
-obj_t* next(obj_t *xs) {
-    Cons* cell = xs->value;
-    return cell->cdr;
-}
-*/
+Object* EMPTY = NULL; 
 
-void print_float(obj_t* obj) {
-    printf("%f", *((double*)obj->value));
-}
+Object* list_empty() {
+  if (EMPTY != NULL) {
+    return EMPTY;
+  }
 
-void print_char(obj_t* obj) {
-    printf("%c", *((char*)obj->value));
-}
+  Object* obj = malloc(sizeof(Object));
+  obj->type   = TYPE_CONS;
+  obj->car    = NULL;
+  obj->cdr    = NULL;
+  obj->count  = 0;
 
-void print_integer(obj_t* obj) {
-    printf("%d", *((int*)obj->value));
-}
+  EMPTY = obj;
 
-void print_string(obj_t* obj) {
-    printf("\"%s\"", *((char**)obj->value));
+  return obj;
 }
 
-void print(obj_t* obj) {
+Object* list_cons(Object* x, Object* xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: cannot cons type: %s", stype(xs));
+    exit(0);
+  }
+
+  Object* obj = object_allocate();
+  obj->type = TYPE_CONS;
+
+  obj->car = object_allocate();
+  copy_value(obj->car, x);
+
+  obj->cdr = xs;
+  obj->count = xs->count + 1;
+
+  return obj;
+}
+
+Object* list_car(Object* xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: cannot get the car of a %s", stype(xs));
+    exit(0);
+  }
+
+  return xs->car;
+}
+
+Object* list_cdr(Object *xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: cannot get the cdr of a %s", stype(xs));
+    exit(0);
+  }
+
+  return xs->cdr;
+}
+
+Object* list_count(Object *xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: cannot get the count of a %s", stype(xs));
+    exit(0);
+  }
+
+  return object_new_integer(xs->count);
+}
+
+void list_print(Object* xs) {
+  if (xs->type != TYPE_CONS) {
+    printf("TypeError: can only print lists got a %s instead", stype(xs));
+    exit(0);
+  }
+
+  putchar('(');
+
+  Object* list = xs;
+  
+  while (!list_is_empty(list)) {
+    print(list->car);
+    if (!list_is_empty(list->cdr)) {
+      putchar(' ');
+    }
+    list = list->cdr;
+  }
+  
+  putchar(')');
+}
+
+void float_print(Object* obj) {
+  printf("%f", obj->float_val);
+}
+
+void integer_print(Object* obj) {
+  printf("%ld", obj->int_val);
+}
+
+void string_print(Object* obj) {
+  printf("\"%s\"", obj->str_val);
+}
+
+void symbol_print(Object* obj) {
+  printf("%s", obj->str_val);
+}
+
+void print(Object* obj) {
   switch(obj->type) {
-        case TYPE_INT:
-            puts("int");
-            print_integer(obj);
-            break;
-        case TYPE_FLOAT:
-            puts("float");
-            print_float(obj);
-            break;
-        case TYPE_CHAR:
-            puts("char");
-            print_char(obj);
-            break;
-        case TYPE_STRING:
-            puts("string");
-            print_string(obj);
-            break;
-        default:
-            puts("Error: Unknown object");
-            exit(0);
-    }
+  case TYPE_INT:
+    integer_print(obj);
+    break;
+  case TYPE_FLOAT:
+    float_print(obj);
+    break;
+  case TYPE_STRING:
+    string_print(obj);
+    break;
+  case TYPE_SYMBOL:
+    symbol_print(obj);
+    break;
+  case TYPE_CONS:
+    list_print(obj);
+    break;
+  default:
+    puts("Error: Unknown type");
+    exit(0);
+  }
 }
 
-/*
-void destroy_object(obj_t *object) {
-    if (object) {
-        free(object);
-        if (object->type == TYPE_CONS)
-            destroy_object(next(object));
+void destroy_object(Object *object) {
+  if (object) {
+    free(object);
+    if (object->type == TYPE_CONS) {
+      destroy_object(list_cdr(object));
     }
+  }
 }
-*/
 
-int main(int argc, char* argv[]) {
-    obj_t* obj = integer_object(14);
-    obj_t* str = string_object("Testing");
-    printf("%d %s", str->type, *((char**)str->value));
-    puts("\n");
-    print(str);
-    puts("\n");
-    printf("%d %d", obj->type, *((int*)obj->value));
-    puts("\n");
-    print_integer(obj);
-    puts("\n");
-    print(obj);
-    //print(&obj);
-    //printf("\n");
-    //print(float_object(0.9));
+int main() {
+  Object* obj = list_cons(object_new_integer(2), list_cons(object_new_integer(1), list_empty()));
+  print(obj);
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
