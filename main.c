@@ -20,9 +20,6 @@ typedef struct Object {
   // strings, symbols
   char* str_val;
     
-  // error handling
-  char* error;
-
   // list count, car and cdr
   int            count;
   struct Object* car;
