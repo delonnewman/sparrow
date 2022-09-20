@@ -1,53 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TYPE_INT    0
-#define TYPE_FLOAT  1
-#define TYPE_CHAR   2
-#define TYPE_STRING 3
-#define TYPE_SYMBOL 4
-#define TYPE_CONS   5
+enum {
+    TYPE_INT    = 0,
+    TYPE_FLOAT  = 1,
+    TYPE_CHAR   = 2,
+    TYPE_STRING = 3,
+    TYPE_SYMBOL = 4,
+    TYPE_CONS   = 5,
+};
 
-typedef struct Object {
+typedef struct {
     int   type;
     void* value;
-} Object;
+} obj_t;
 
-Object* object(int type, void* value) {
-    Object* object = malloc(sizeof(Object));
+obj_t* object(int type, void* value) {
+    obj_t* object = malloc(sizeof(obj_t));
     object->type  = type;
     object->value = value;
 
     return object;
 }
 
-Object* integer_object(int x) {
+obj_t* integer_object(int x) {
     return object(TYPE_INT, &x);
 }
 
-Object* float_object(double x) {
+obj_t* float_object(double x) {
     return object(TYPE_FLOAT, &x); 
 }
 
-Object* char_object(char x) {
+obj_t* char_object(char x) {
     return object(TYPE_CHAR, &x);
 }
 
-Object* string_object(char* x) {
+obj_t* string_object(char* x) {
     return object(TYPE_STRING, &x);
 }
 
-Object* symbol_object(char* x) {
+obj_t* symbol_object(char* x) {
     return object(TYPE_SYMBOL, &x);
 }
 
 /*
-typedef struct Cons {
-    Object* car;
-    struct Object* cdr;
+typedef struct {
+    obj_t* car;
+    struct obj_t* cdr;
 } Cons;
 
-Object cons(Object* x, Object* xs) {
+obj_t cons(obj_t* x, obj_t* xs) {
     Cons *cell = malloc(sizeof(Cons));
     cell->car = x;
     cell->cdr = xs;
@@ -56,44 +58,52 @@ Object cons(Object* x, Object* xs) {
 }
 
 // TODO: Add error handling
-Object* first(Object* xs) {
+obj_t* first(obj_t* xs) {
     Cons* cell = xs->value;
     if (xs)
         return cell->car;
     return NULL;
 }
 
-Object* next(Object *xs) {
+obj_t* next(obj_t *xs) {
     Cons* cell = xs->value;
     return cell->cdr;
 }
 */
 
-void print_float(Object** object) {
-  double x = *((double*)((*object)->value));
-    printf("%f", x);
+void print_float(obj_t* obj) {
+    printf("%f", *((double*)obj->value));
 }
 
-void print_char(Object** object) {
-    char x = *((char *)((*object)->value));
-    printf("%c", x);
+void print_char(obj_t* obj) {
+    printf("%c", *((char*)obj->value));
 }
 
-void print_integer(Object** object) {
-    int* x = (int*)((*object)->value);
-    printf("%d", *x);
+void print_integer(obj_t* obj) {
+    printf("%d", *((int*)obj->value));
 }
 
-void print(Object** object) {
-  switch((*object)->type) {
+void print_string(obj_t* obj) {
+    printf("\"%s\"", *((char**)obj->value));
+}
+
+void print(obj_t* obj) {
+  switch(obj->type) {
         case TYPE_INT:
-            print_integer(object);
+            puts("int");
+            print_integer(obj);
             break;
         case TYPE_FLOAT:
-            print_float(object);
+            puts("float");
+            print_float(obj);
             break;
         case TYPE_CHAR:
-            print_char(object);
+            puts("char");
+            print_char(obj);
+            break;
+        case TYPE_STRING:
+            puts("string");
+            print_string(obj);
             break;
         default:
             puts("Error: Unknown object");
@@ -102,7 +112,7 @@ void print(Object** object) {
 }
 
 /*
-void destroy_object(Object *object) {
+void destroy_object(obj_t *object) {
     if (object) {
         free(object);
         if (object->type == TYPE_CONS)
@@ -112,13 +122,20 @@ void destroy_object(Object *object) {
 */
 
 int main(int argc, char* argv[]) {
-    Object* obj = integer_object(1);
+    obj_t* obj = integer_object(14);
+    obj_t* str = string_object("Testing");
+    printf("%d %s", str->type, *((char**)str->value));
+    puts("\n");
+    print(str);
+    puts("\n");
     printf("%d %d", obj->type, *((int*)obj->value));
     puts("\n");
-    print(&obj);
+    print_integer(obj);
+    puts("\n");
+    print(obj);
     //print(&obj);
     //printf("\n");
     //print(float_object(0.9));
 
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -8,5 +8,5 @@ clean:
 lisp:
 	cc -Wall -o lisp main.c
 
-run:
+run: lisp
 	./lisp
