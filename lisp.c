@@ -26,11 +26,23 @@ Object* object_allocate() {
 }
 
 void object_destroy(Object *object) {
-  if (object) {
+  switch(object->type) {
+  case TYPE_INT:
+  case TYPE_FLOAT:
     free(object);
-    if (object->type == TYPE_CONS) {
-      object_destroy(list_cdr(object));
-    }
+    break;
+  case TYPE_STRING:
+  case TYPE_SYMBOL:
+    free(object);
+    free(object->str_val);
+    break;
+  case TYPE_CONS:
+    free(object);
+    object_destroy(list_cdr(object));
+    break;
+  default:
+    puts("TypeError: invalid type");
+    exit(0);
   }
 }
 
