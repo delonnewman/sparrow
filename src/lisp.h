@@ -36,12 +36,12 @@ Object* object_new_string(char* value);
 Object* object_new_symbol(char* value);
 void object_copy(Object* target, Object* source);
 
-bool list_is_empty(Object* xs);
+bool list_is_empty(Object* list);
 Object* list_empty();
-Object* list_cons(Object* x, Object* xs);
-Object* list_car(Object* xs);
-Object* list_cdr(Object* xs);
-Object* list_count(Object* xs);
-void list_print(Object* xs);
+Object* list_cons(Object* value, Object* list);
+Object* list_car(Object* list);
+Object* list_cdr(Object* list);
+Object* list_count(Object* list);
+void list_print(Object* list);
 
 void print(Object *obj);

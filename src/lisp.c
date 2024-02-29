@@ -105,13 +105,13 @@ void object_copy(Object* target, Object* source) {
   }
 }
 
-bool list_is_empty(Object* xs) {
-  if (xs->type != TYPE_CONS) {
-    printf("TypeError: can only determine if lists are empty got %s instead", type_name(xs));
+bool list_is_empty(Object* list) {
+  if (list->type != TYPE_CONS) {
+    printf("TypeError: can only determine if lists are empty got %s instead", type_name(list));
     exit(0);
   }
 
-  return xs->count == 0;
+  return list->count == 0;
 }
 
 Object* EMPTY = NULL; 
@@ -132,9 +132,9 @@ Object* list_empty() {
   return obj;
 }
 
-Object* list_cons(Object* x, Object* xs) {
-  if (xs->type != TYPE_CONS) {
-    printf("TypeError: cannot cons type: %s", type_name(xs));
+Object* list_cons(Object* value, Object* list) {
+  if (list->type != TYPE_CONS) {
+    printf("TypeError: cannot cons type: %s", type_name(list));
     exit(0);
   }
 
@@ -142,52 +142,52 @@ Object* list_cons(Object* x, Object* xs) {
   obj->type = TYPE_CONS;
 
   obj->car = object_allocate();
-  object_copy(obj->car, x);
+  object_copy(obj->car, value);
 
-  obj->cdr = xs;
-  obj->count = xs->count + 1;
+  obj->cdr = list;
+  obj->count = list->count + 1;
 
   return obj;
 }
 
-Object* list_car(Object* xs) {
-  if (xs->type != TYPE_CONS) {
-    printf("TypeError: cannot get the car of a %s", type_name(xs));
+Object* list_car(Object* list) {
+  if (list->type != TYPE_CONS) {
+    printf("TypeError: cannot get the car of a %s", type_name(list));
     exit(0);
   }
 
-  return xs->car;
+  return list->car;
 }
 
-Object* list_cdr(Object *xs) {
-  if (xs->type != TYPE_CONS) {
-    printf("TypeError: cannot get the cdr of a %s", type_name(xs));
+Object* list_cdr(Object *list) {
+  if (list->type != TYPE_CONS) {
+    printf("TypeError: cannot get the cdr of a %s", type_name(list));
     exit(0);
   }
 
-  return xs->cdr;
+  return list->cdr;
 }
 
-Object* list_count(Object *xs) {
-  if (xs->type != TYPE_CONS) {
-    printf("TypeError: cannot get the count of a %s", type_name(xs));
+Object* list_count(Object *list) {
+  if (list->type != TYPE_CONS) {
+    printf("TypeError: cannot get the count of a %s", type_name(list));
     exit(0);
   }
 
-  return object_new_integer(xs->count);
+  return object_new_integer(list->count);
 }
 
-void list_print(Object* xs) {
+void list_print(Object* list) {
   putchar('(');
 
-  Object* list = xs;
+  Object* current = list;
   
-  while (!list_is_empty(list)) {
-    print(list->car);
-    if (!list_is_empty(list->cdr)) {
+  while (!list_is_empty(current)) {
+    print(current->car);
+    if (!list_is_empty(current->cdr)) {
       putchar(' ');
     }
-    list = list->cdr;
+    current = current->cdr;
   }
   
   putchar(')');

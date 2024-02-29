@@ -1,3 +1,4 @@
 lisp
 .DS_Store
 *.o
+test/*_test
