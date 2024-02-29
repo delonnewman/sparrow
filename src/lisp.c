@@ -1,23 +1,8 @@
 #include "lisp.h"
 
-char* type_name(Object* obj) {
-  switch (obj->type) {
-  case TYPE_INT:
-    return "integer";
-  case TYPE_FLOAT:
-    return "float";
-  case TYPE_CHAR:
-    return "char";
-  case TYPE_STRING:
-    return "string";
-  case TYPE_SYMBOL:
-    return "symbol";
-  case TYPE_CONS:
-    return "list";
-  default:
-    puts("Error: Unknown type");
-    exit(0);
-  }
+int die(char* message) {
+  fprintf(stderr, "Error: '%s'\n", message);
+  exit(0);
 }
 
 Object* object_allocate() {
@@ -41,7 +26,7 @@ void object_destroy(Object *object) {
     object_destroy(list_cdr(object));
     break;
   default:
-    puts("TypeError: invalid type");
+    fprintf(stderr, "TypeError: invalid type");
     exit(0);
   }
 }
@@ -100,14 +85,14 @@ void object_copy(Object* target, Object* source) {
     target->car   = source->car;
     target->cdr   = source->cdr;
   default:
-    puts("Error: Unknown type");
+    fprintf(stderr, "TypeError: unknown type");
     exit(0);
   }
 }
 
 bool list_is_empty(Object* list) {
   if (list->type != TYPE_CONS) {
-    printf("TypeError: can only determine if lists are empty got %s instead", type_name(list));
+    fprintf(stderr, "TypeError: can only determine if lists are empty got %s instead", type_name(list));
     exit(0);
   }
 
@@ -134,7 +119,7 @@ Object* list_empty() {
 
 Object* list_cons(Object* value, Object* list) {
   if (list->type != TYPE_CONS) {
-    printf("TypeError: cannot cons type: %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot cons type: %s", type_name(list));
     exit(0);
   }
 
@@ -152,7 +137,7 @@ Object* list_cons(Object* value, Object* list) {
 
 Object* list_car(Object* list) {
   if (list->type != TYPE_CONS) {
-    printf("TypeError: cannot get the car of a %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot get the car of a %s", type_name(list));
     exit(0);
   }
 
@@ -161,7 +146,7 @@ Object* list_car(Object* list) {
 
 Object* list_cdr(Object *list) {
   if (list->type != TYPE_CONS) {
-    printf("TypeError: cannot get the cdr of a %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot get the cdr of a %s", type_name(list));
     exit(0);
   }
 
@@ -170,7 +155,7 @@ Object* list_cdr(Object *list) {
 
 Object* list_count(Object *list) {
   if (list->type != TYPE_CONS) {
-    printf("TypeError: cannot get the count of a %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(list));
     exit(0);
   }
 
@@ -181,7 +166,7 @@ void list_print(Object* list) {
   putchar('(');
 
   Object* current = list;
-  
+
   while (!list_is_empty(current)) {
     print(current->car);
     if (!list_is_empty(current->cdr)) {
@@ -191,6 +176,75 @@ void list_print(Object* list) {
   }
   
   putchar(')');
+}
+
+char* list_inspect(Object* list) {
+  char* buffer = "(";
+
+  Object* current = list;
+
+  while (!list_is_empty(current)) {
+    strcat(buffer, inspect(current->car));
+    if (!list_is_empty(current->cdr)) {
+      strcat(buffer, " ");
+    }
+    current = current->cdr;
+  }
+
+  return strcat(buffer, ")");
+}
+
+char* type_name(Object* obj) {
+  switch (obj->type) {
+  case TYPE_INT:
+    return "integer";
+  case TYPE_FLOAT:
+    return "float";
+  case TYPE_CHAR:
+    return "char";
+  case TYPE_STRING:
+    return "string";
+  case TYPE_SYMBOL:
+    return "symbol";
+  case TYPE_CONS:
+    return "list";
+  default:
+    fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
+    exit(0);
+  }
+}
+
+char* inspect(Object* obj) {
+  char* buffer = "";
+
+  switch(obj->type) {
+  case TYPE_INT:
+    sprintf(buffer, "%ld", obj->int_val);
+    break;
+  case TYPE_FLOAT:
+    sprintf(buffer, "%f", obj->float_val);
+    break;
+  case TYPE_STRING:
+    sprintf(buffer, "\"%s\"", obj->str_val);
+    break;
+  case TYPE_CHAR:
+    sprintf(buffer, "\%c", obj->char_val);
+    break;
+  case TYPE_SYMBOL:
+    sprintf(buffer, "%s", obj->str_val);
+    break;
+  case TYPE_CONS:
+    return list_inspect(obj);
+  default:
+    fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
+    exit(0);
+  }
+
+  return buffer;
+}
+
+void object_dump(Object* obj) {
+  fprintf(stderr, "#<%s>\n", type_name(obj));
 }
 
 void print(Object* obj) {
@@ -204,6 +258,9 @@ void print(Object* obj) {
   case TYPE_STRING:
     printf("\"%s\"", obj->str_val);
     break;
+  case TYPE_CHAR:
+    printf("\%c", obj->char_val);
+    break;
   case TYPE_SYMBOL:
     printf("%s", obj->str_val);
     break;
@@ -211,7 +268,7 @@ void print(Object* obj) {
     list_print(obj);
     break;
   default:
-    puts("Error: Unknown type");
+    fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
     exit(0);
   }
 }

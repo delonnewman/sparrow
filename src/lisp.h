@@ -13,20 +13,19 @@ enum {
 };
 
 typedef struct Object {
-  int    type;
-  long   int_val;
+  int type;
+  long int_val;
   double float_val;
+  char char_val;
 
   // strings, symbols
   char* str_val;
-    
+
   // list count, car and cdr
   int            count;
   struct Object* car;
   struct Object* cdr;
 } Object;
-
-char* type_name(Object* obj);
 
 Object* object_allocate();
 void object_destroy(Object* object);
@@ -42,6 +41,9 @@ Object* list_cons(Object* value, Object* list);
 Object* list_car(Object* list);
 Object* list_cdr(Object* list);
 Object* list_count(Object* list);
+char* list_inspect(Object* list);
 void list_print(Object* list);
 
+char* type_name(Object* obj);
 void print(Object *obj);
+char* inspect(Object *obj);
