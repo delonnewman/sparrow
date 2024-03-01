@@ -6,7 +6,6 @@ void test_integer_equality() {
   assert(!is_equal(object_integer(2), object_integer(1)));
 }
 
-
 void test_float_equality() {
   assert(is_equal(object_float(1.1), object_float(1.1)));
   assert(!is_equal(object_float(1.0), object_float(1.1)));

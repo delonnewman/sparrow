@@ -27,8 +27,12 @@ test/list_test$(EXE): lisp.o
 test/equal_test$(EXE): lisp.o
 	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/equal_test.c lisp.o $(LDLIBS)
 
-test: test/list_test$(EXE) test/equal_test$(EXE)
+test/array_test$(EXE): lisp.o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/array_test.c lisp.o $(LDLIBS)
+
+test: test/list_test$(EXE) test/equal_test$(EXE) test/array_test$(EXE)
 	./test/list_test$(EXE)
 	./test/equal_test$(EXE)
+	./test/array_test$(EXE)
 
 .PHONY: all clean run test

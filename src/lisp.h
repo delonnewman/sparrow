@@ -11,6 +11,8 @@ enum {
   TYPE_STRING = 4,
   TYPE_SYMBOL = 5,
   TYPE_CONS   = 6,
+  TYPE_ARRAY  = 7,
+  TYPE_MAP    = 8,
 };
 
 typedef struct Object {
@@ -22,8 +24,12 @@ typedef struct Object {
   // strings, symbols
   char* str_val;
 
-  // list count, car and cdr
-  int            count;
+  // collections
+  size_t count;
+
+  size_t* array_ref;
+
+  // list car and cdr
   struct Object* car;
   struct Object* cdr;
 } Object;
@@ -44,9 +50,17 @@ Object* list_empty();
 Object* list_cons(Object* value, Object* list);
 Object* list_car(Object* list);
 Object* list_cdr(Object* list);
-Object* list_count(Object* list);
-
 void list_print(Object* list);
+bool is_list(Object* list);
+
+Object* array_new(size_t size);
+Object* array_at(Object* array, int index);
+size_t array_size(Object* array);
+void array_set(Object* array, int index, Object* value);
+void array_print(Object* array);
+bool is_array(Object* array);
+
+size_t col_count(Object* list);
 
 bool is_equal(Object* obj1, Object* obj2);
 bool is_zero(Object* obj);

@@ -154,7 +154,7 @@ bool is_empty(Object* list) {
     exit(0);
   }
 
-  return list->count == 0;
+  return col_count(list) == 0;
 }
 
 Object* EMPTY = NULL; 
@@ -211,13 +211,13 @@ Object* list_cdr(Object *list) {
   return list->cdr;
 }
 
-Object* list_count(Object *list) {
+size_t col_count(Object *list) {
   if (list->type != TYPE_CONS) {
     fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(list));
     exit(0);
   }
 
-  return object_integer(list->count);
+  return list->count;
 }
 
 void list_print(Object* list) {
@@ -234,6 +234,10 @@ void list_print(Object* list) {
   }
   
   putchar(')');
+}
+
+bool is_list(Object* list) {
+  return list->type == TYPE_CONS;
 }
 
 char* type_name(Object* obj) {
@@ -268,6 +272,21 @@ bool is_true(Object *obj) {
 
 void object_dump(Object* obj) {
   fprintf(stderr, "#<%s>\n", type_name(obj));
+}
+
+Object* array_new(size_t size) {
+  Object* object  = object_allocate();
+  object->type    = TYPE_ARRAY;
+
+  size_t array[size];
+  object->array_ref = array;
+  object->count = size;
+
+  return object;
+}
+
+bool is_array(Object* array) {
+  return array->type == TYPE_ARRAY;
 }
 
 void print(Object* obj) {
@@ -305,6 +324,18 @@ void say(Object* obj) {
   printf("\n");
 }
 
+bool is_integer(Object* obj) {
+  return obj->type == TYPE_INT;
+}
+
+bool is_float(Object* obj) {
+  return obj->type == TYPE_FLOAT;
+}
+
+bool is_number(Object* obj) {
+  return is_integer(obj) || is_float(obj);
+}
+
 bool list_is_equal(Object* list1, Object* list2) {
   bool empty1 = is_empty(list1);
   bool empty2 = is_empty(list2);
@@ -321,18 +352,6 @@ bool list_is_equal(Object* list1, Object* list2) {
   }
 
   return true;
-}
-
-bool is_integer(Object* obj) {
-  return obj->type == TYPE_INT;
-}
-
-bool is_float(Object* obj) {
-  return obj->type == TYPE_FLOAT;
-}
-
-bool is_number(Object* obj) {
-  return is_integer(obj) || is_float(obj);
 }
 
 bool is_equal(Object* object1, Object* object2) {

@@ -10,7 +10,7 @@ void test_empty() {
 void test_empty_count() {
   Object* list = list_empty();
 
-  assert(is_zero(list_count(list)));
+  assert(col_count(list) == 0);
 }
 
 void test_cons() {
@@ -18,6 +18,7 @@ void test_cons() {
   list = list_cons(object_integer(1), list);
 
   assert(is_equal(list_car(list), object_integer(1)));
+  assert(col_count(list) == 1);
 }
 
 int main() {
