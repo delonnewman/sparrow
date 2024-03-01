@@ -1,7 +1,7 @@
 #include "lisp.h"
 
-int die(char* message) {
-  fprintf(stderr, "Error: '%s'\n", message);
+int die(char* type, char* message) {
+  fprintf(stderr, "%s: '%s'\n", type, message);
   exit(0);
 }
 
@@ -14,6 +14,7 @@ void object_destroy(Object *object) {
   switch(object->type) {
   case TYPE_INT:
   case TYPE_FLOAT:
+  case TYPE_BOOL:
     free(object);
     break;
   case TYPE_STRING:
@@ -31,7 +32,7 @@ void object_destroy(Object *object) {
   }
 }
 
-Object* object_new_integer(long value) {
+Object* object_integer(long value) {
   Object* object  = object_allocate();
   object->type    = TYPE_INT;
   object->int_val = value;
@@ -39,7 +40,15 @@ Object* object_new_integer(long value) {
   return object;
 }
 
-Object* object_new_float(double value) {
+Object* object_char(char value) {
+  Object* object  = object_allocate();
+  object->type    = TYPE_CHAR;
+  object->char_val = value;
+
+  return object;
+}
+
+Object* object_float(double value) {
   Object* object    = object_allocate();
   object->type      = TYPE_FLOAT;
   object->float_val = value;
@@ -47,7 +56,7 @@ Object* object_new_float(double value) {
   return object;
 }
 
-Object* object_new_string(char* value) {
+Object* object_string(char* value) {
   Object* object  = object_allocate();
   object->type    = TYPE_STRING;
   object->str_val = malloc(strlen(value) + 1);
@@ -56,11 +65,43 @@ Object* object_new_string(char* value) {
   return object;
 }
 
-Object* object_new_symbol(char* value) {
+Object* object_symbol(char* value) {
   Object* object  = object_allocate();
   object->type    = TYPE_SYMBOL;
   object->str_val = malloc(strlen(value) + 1);
   strcpy(object->str_val, value);
+
+  return object;
+}
+
+Object* BOOL_TRUE = NULL;
+
+Object* object_true() {
+  if (BOOL_TRUE != NULL) {
+    return BOOL_TRUE;
+  }
+
+  Object* object  = object_allocate();
+  object->type    = TYPE_BOOL;
+  object->int_val = 1;
+
+  BOOL_TRUE = object;
+
+  return object;
+}
+
+Object* BOOL_FALSE = NULL;
+
+Object* object_false() {
+  if (BOOL_FALSE != NULL) {
+    return BOOL_FALSE;
+  }
+
+  Object* object  = object_allocate();
+  object->type    = TYPE_BOOL;
+  object->int_val = 0;
+
+  BOOL_FALSE = object;
 
   return object;
 }
@@ -70,10 +111,14 @@ void object_copy(Object* target, Object* source) {
 
   switch (source->type) {
   case TYPE_INT:
+  case TYPE_BOOL:
     target->int_val = source->int_val;
     break;
   case TYPE_FLOAT:
     target->float_val = source->float_val;
+    break;
+  case TYPE_CHAR:
+    target->char_val = source->char_val;
     break;
   case TYPE_STRING:
   case TYPE_SYMBOL:
@@ -84,13 +129,26 @@ void object_copy(Object* target, Object* source) {
     target->count = source->count;
     target->car   = source->car;
     target->cdr   = source->cdr;
+    break;
   default:
-    fprintf(stderr, "TypeError: unknown type");
+    fprintf(stderr, "TypeError: unknown type '%s'", type_name(source));
     exit(0);
   }
 }
 
-bool list_is_empty(Object* list) {
+bool is_zero(Object* number) {
+  switch(number->type) {
+    case TYPE_INT:
+      return number->int_val == 0;
+    case TYPE_FLOAT:
+      return number->float_val == 0.0;
+    default:
+      fprintf(stderr, "TypeError: zero? only works on numeric types");
+      exit(0);
+  }
+}
+
+bool is_empty(Object* list) {
   if (list->type != TYPE_CONS) {
     fprintf(stderr, "TypeError: can only determine if lists are empty got %s instead", type_name(list));
     exit(0);
@@ -159,7 +217,7 @@ Object* list_count(Object *list) {
     exit(0);
   }
 
-  return object_new_integer(list->count);
+  return object_integer(list->count);
 }
 
 void list_print(Object* list) {
@@ -167,9 +225,9 @@ void list_print(Object* list) {
 
   Object* current = list;
 
-  while (!list_is_empty(current)) {
+  while (!is_empty(current)) {
     print(current->car);
-    if (!list_is_empty(current->cdr)) {
+    if (!is_empty(current->cdr)) {
       putchar(' ');
     }
     current = current->cdr;
@@ -178,28 +236,14 @@ void list_print(Object* list) {
   putchar(')');
 }
 
-char* list_inspect(Object* list) {
-  char* buffer = "(";
-
-  Object* current = list;
-
-  while (!list_is_empty(current)) {
-    strcat(buffer, inspect(current->car));
-    if (!list_is_empty(current->cdr)) {
-      strcat(buffer, " ");
-    }
-    current = current->cdr;
-  }
-
-  return strcat(buffer, ")");
-}
-
 char* type_name(Object* obj) {
   switch (obj->type) {
   case TYPE_INT:
     return "integer";
   case TYPE_FLOAT:
     return "float";
+  case TYPE_BOOL:
+    return "boolean";
   case TYPE_CHAR:
     return "char";
   case TYPE_STRING:
@@ -214,33 +258,12 @@ char* type_name(Object* obj) {
   }
 }
 
-char* inspect(Object* obj) {
-  char* buffer = "";
+bool is_false(Object *obj) {
+  return obj->type == TYPE_BOOL && obj->int_val == 0;
+}
 
-  switch(obj->type) {
-  case TYPE_INT:
-    sprintf(buffer, "%ld", obj->int_val);
-    break;
-  case TYPE_FLOAT:
-    sprintf(buffer, "%f", obj->float_val);
-    break;
-  case TYPE_STRING:
-    sprintf(buffer, "\"%s\"", obj->str_val);
-    break;
-  case TYPE_CHAR:
-    sprintf(buffer, "\%c", obj->char_val);
-    break;
-  case TYPE_SYMBOL:
-    sprintf(buffer, "%s", obj->str_val);
-    break;
-  case TYPE_CONS:
-    return list_inspect(obj);
-  default:
-    fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
-    exit(0);
-  }
-
-  return buffer;
+bool is_true(Object *obj) {
+  return !is_false(obj);
 }
 
 void object_dump(Object* obj) {
@@ -254,6 +277,10 @@ void print(Object* obj) {
     break;
   case TYPE_FLOAT:
     printf("%f", obj->float_val);
+    break;
+  case TYPE_BOOL:
+    if (is_false(obj)) printf("%s", "false");
+    else printf("%s", "true");
     break;
   case TYPE_STRING:
     printf("\"%s\"", obj->str_val);
@@ -270,5 +297,49 @@ void print(Object* obj) {
   default:
     fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
     exit(0);
+  }
+}
+
+void say(Object* obj) {
+  print(obj);
+  printf("\n");
+}
+
+bool list_is_equal(Object* list1, Object* list2) {
+  bool empty1 = is_empty(list1);
+  bool empty2 = is_empty(list2);
+  if (empty1 && empty2) return true;
+  if (empty1 || empty2) return false;
+
+  Object* current1 = list1;
+  Object* current2 = list2;
+
+  while (!is_empty(current1) && !is_empty(current2)) {
+    if (!is_equal(current1->cdr, current2->cdr)) return false;
+    current1 = current1->cdr;
+    current2 = current2->cdr;
+  }
+
+  return true;
+}
+
+bool is_equal(Object* object1, Object* object2) {
+  if (object1->type != object2->type) return false;
+  switch (object1->type) {
+    case TYPE_INT:
+    case TYPE_BOOL:
+      return object1->int_val == object2->int_val;
+    case TYPE_FLOAT:
+      return object1->float_val == object2->float_val;
+    case TYPE_CHAR:
+      return object1->char_val == object2->char_val;
+    case TYPE_STRING:
+    case TYPE_SYMBOL:
+      return strcmp(object1->str_val, object2->str_val);
+    case TYPE_CONS:
+      return list_is_equal(object1, object2);
+    default:
+      fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(object1));
+      exit(0);
   }
 }
