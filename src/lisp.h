@@ -48,11 +48,14 @@ Object* list_count(Object* list);
 
 void list_print(Object* list);
 
+bool is_equal(Object* obj1, Object* obj2);
 bool is_zero(Object* obj);
 bool is_empty(Object* list);
 bool is_false(Object* obj);
 bool is_true(Object* obj);
-bool is_equal(Object* obj1, Object* obj2);
+bool is_integer(Object* obj);
+bool is_float(Object* obj);
+bool is_number(Object* obj);
 
 char* type_name(Object* obj);
 void print(Object* obj);

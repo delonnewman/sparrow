@@ -315,7 +315,7 @@ bool list_is_equal(Object* list1, Object* list2) {
   Object* current2 = list2;
 
   while (!is_empty(current1) && !is_empty(current2)) {
-    if (!is_equal(current1->cdr, current2->cdr)) return false;
+    if (!is_equal(current1->car, current2->car)) return false;
     current1 = current1->cdr;
     current2 = current2->cdr;
   }
@@ -323,23 +323,46 @@ bool list_is_equal(Object* list1, Object* list2) {
   return true;
 }
 
+bool is_integer(Object* obj) {
+  return obj->type == TYPE_INT;
+}
+
+bool is_float(Object* obj) {
+  return obj->type == TYPE_FLOAT;
+}
+
+bool is_number(Object* obj) {
+  return is_integer(obj) || is_float(obj);
+}
+
 bool is_equal(Object* object1, Object* object2) {
-  if (object1->type != object2->type) return false;
-  switch (object1->type) {
-    case TYPE_INT:
-    case TYPE_BOOL:
-      return object1->int_val == object2->int_val;
-    case TYPE_FLOAT:
-      return object1->float_val == object2->float_val;
-    case TYPE_CHAR:
-      return object1->char_val == object2->char_val;
-    case TYPE_STRING:
-    case TYPE_SYMBOL:
-      return strcmp(object1->str_val, object2->str_val);
-    case TYPE_CONS:
-      return list_is_equal(object1, object2);
-    default:
-      fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(object1));
-      exit(0);
+  if (object1->type == object2->type) {
+    switch (object1->type) {
+      case TYPE_INT:
+      case TYPE_BOOL:
+        return object1->int_val == object2->int_val;
+      case TYPE_FLOAT:
+        return object1->float_val == object2->float_val;
+      case TYPE_CHAR:
+        return object1->char_val == object2->char_val;
+      case TYPE_STRING:
+      case TYPE_SYMBOL:
+        return strcmp(object1->str_val, object2->str_val) == 0;
+      case TYPE_CONS:
+        return list_is_equal(object1, object2);
+      default:
+        fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(object1));
+        exit(0);
+    }
   }
+  else if (is_number(object1) && is_number(object2)) {
+    if (is_integer(object1)) {
+      return object1->int_val == object2->float_val;
+    }
+    if (is_float(object1)) {
+      return object1->float_val == object2->int_val;
+    }
+  }
+
+  return false;
 }
