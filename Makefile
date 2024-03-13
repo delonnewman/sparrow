@@ -5,30 +5,31 @@ CFLAGS  = -std=c99 -Wall -Wextra -Wno-missing-field-initializers
 LDFLAGS =
 LDLIBS  =
 SRC     = src
+NAME    = sparrow
 
-all: lisp
+all: $(NAME)
 
 clean:
-	rm -f lisp lisp.o
+	rm -f $(NAME) $(NAME).o
 	rm -f test/list_test$(EXE)
 
-lisp.o:
-	$(CC) -c $(CFLAGS) -o lisp.o $(SRC)/lisp.c
+$(NAME).o:
+	$(CC) -c $(CFLAGS) -o $@ $(SRC)/$(NAME).c
 
-lisp$(EXE): lisp.o
-	$(CC) $(CFLAGS) -o $@ $(SRC)/main.c lisp.o $(LDLIBS)
+lisp$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -o $@ $(SRC)/main.c $(NAME).o $(LDLIBS)
 
-run: lisp
-	./lisp$(EXE)
+run: $(NAME)
+	./$(NAME)$(EXE)
 
-test/list_test$(EXE): lisp.o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/list_test.c lisp.o $(LDLIBS)
+test/list_test$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/list_test.c $(NAME).o $(LDLIBS)
 
-test/equal_test$(EXE): lisp.o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/equal_test.c lisp.o $(LDLIBS)
+test/equal_test$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/equal_test.c $(NAME).o $(LDLIBS)
 
-test/array_test$(EXE): lisp.o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/array_test.c lisp.o $(LDLIBS)
+test/array_test$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/array_test.c $(NAME).o $(LDLIBS)
 
 test: test/list_test$(EXE) test/equal_test$(EXE) test/array_test$(EXE)
 	./test/list_test$(EXE)

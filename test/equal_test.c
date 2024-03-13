@@ -1,4 +1,4 @@
-#include "lisp.h"
+#include "sparrow.h"
 #include <assert.h>
 
 void test_integer_equality() {

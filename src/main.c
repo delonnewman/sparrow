@@ -1,4 +1,4 @@
-#include "lisp.h"
+#include "sparrow.h"
 
 int main() {
   Object* obj = list_cons(object_float(1.1), list_cons(object_char('a'), list_cons(object_true(), list_cons(object_integer(2), list_cons(object_integer(1), list_empty())))));

@@ -1,4 +1,4 @@
-#include "lisp.h"
+#include "sparrow.h"
 
 int die(char* type, char* message) {
   fprintf(stderr, "%s: '%s'\n", type, message);
@@ -148,16 +148,7 @@ bool is_zero(Object* number) {
   }
 }
 
-bool is_empty(Object* list) {
-  if (list->type != TYPE_CONS) {
-    fprintf(stderr, "TypeError: can only determine if lists are empty got %s instead", type_name(list));
-    exit(0);
-  }
-
-  return col_count(list) == 0;
-}
-
-Object* EMPTY = NULL; 
+Object* EMPTY = NULL;
 
 Object* list_empty() {
   if (EMPTY != NULL) {
@@ -209,15 +200,6 @@ Object* list_cdr(Object *list) {
   }
 
   return list->cdr;
-}
-
-size_t col_count(Object *list) {
-  if (list->type != TYPE_CONS) {
-    fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(list));
-    exit(0);
-  }
-
-  return list->count;
 }
 
 void list_print(Object* list) {
@@ -274,7 +256,7 @@ void object_dump(Object* obj) {
   fprintf(stderr, "#<%s>\n", type_name(obj));
 }
 
-Object* array_new(size_t size) {
+Object* make_array(size_t size) {
   Object* object  = object_allocate();
   object->type    = TYPE_ARRAY;
 
@@ -287,6 +269,23 @@ Object* array_new(size_t size) {
 
 bool is_array(Object* array) {
   return array->type == TYPE_ARRAY;
+}
+
+bool is_collection(Object* obj) {
+  return is_array(obj) || is_list(obj);
+}
+
+size_t count(Object *col) {
+  if (!is_collection(col)) {
+    fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(col));
+    exit(0);
+  }
+
+  return col->count;
+}
+
+bool is_empty(Object* list) {
+  return count(list) == 0;
 }
 
 void print(Object* obj) {

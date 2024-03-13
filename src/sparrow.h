@@ -53,14 +53,14 @@ Object* list_cdr(Object* list);
 void list_print(Object* list);
 bool is_list(Object* list);
 
-Object* array_new(size_t size);
+Object* make_array(size_t size);
 Object* array_at(Object* array, int index);
-size_t array_size(Object* array);
 void array_set(Object* array, int index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 
-size_t col_count(Object* list);
+size_t count(Object* list);
+bool is_collection(Object* list);
 
 bool is_equal(Object* obj1, Object* obj2);
 bool is_zero(Object* obj);

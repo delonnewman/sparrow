@@ -1,4 +1,4 @@
-#include "lisp.h"
+#include "sparrow.h"
 #include <assert.h>
 
 void test_empty() {
@@ -10,7 +10,7 @@ void test_empty() {
 void test_empty_count() {
   Object* list = list_empty();
 
-  assert(col_count(list) == 0);
+  assert(count(list) == 0);
 }
 
 void test_cons() {
@@ -18,7 +18,7 @@ void test_cons() {
   list = list_cons(object_integer(1), list);
 
   assert(is_equal(list_car(list), object_integer(1)));
-  assert(col_count(list) == 1);
+  assert(count(list) == 1);
 }
 
 int main() {
