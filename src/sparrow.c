@@ -220,19 +220,19 @@ bool is_list(Object* list) {
 char* type_name(Object* obj) {
   switch (obj->type) {
   case TYPE_INT:
-    return "integer";
+    return "Int";
   case TYPE_FLOAT:
-    return "float";
+    return "Float";
   case TYPE_BOOL:
-    return "boolean";
+    return "Bool";
   case TYPE_CHAR:
-    return "char";
+    return "Char";
   case TYPE_STRING:
-    return "string";
+    return "Str";
   case TYPE_SYMBOL:
-    return "symbol";
+    return "Sym";
   case TYPE_CONS:
-    return "list";
+    return "Cons";
   default:
     fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
     exit(0);
