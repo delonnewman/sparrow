@@ -27,6 +27,30 @@ void object_destroy(Object *object) {
   }
 }
 
+Object* OBJECT_NULL = NULL;
+
+Object* object_null() {
+  if (OBJECT_NULL != NULL) {
+    return OBJECT_NULL;
+  }
+
+  Object* object  = object_allocate();
+  object->type    = TYPE_NULL;
+  object->int_val = 0;
+  object->float_val = 0.0;
+  object->char_val = '\0';
+  object->str_val = "";
+  object->count = 0;
+
+  OBJECT_NULL = object;
+
+  return object;
+}
+
+bool is_null(Object* obj) {
+  return obj->type == TYPE_NULL;
+}
+
 Object* object_integer(long value) {
   Object* object  = object_allocate();
   object->type    = TYPE_INT;

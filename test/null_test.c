@@ -2,7 +2,7 @@
 #include <assert.h>
 
 void test_object_null() {
-    assert(1);
+    assert(is_null(object_null()));
 }
 
 int main() {
