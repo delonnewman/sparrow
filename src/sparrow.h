@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define IS_OBJECT(O) (O != NULL && O->sp_obj == true)
-#define TYPE_TAG_IS(O, T) O->type == T
+#define TYPE_TAG_IS(O, T) (O->type == T)
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
 enum {
