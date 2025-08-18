@@ -21,10 +21,15 @@ void test_array_at_empty() {
   assert(is_null(array_at(array, 0)));
 }
 
+void test_is_array_null_safe() {
+  assert(!is_array(NULL));
+}
+
 int main() {
   test_make_array();
   test_array_at_and_set();
   test_array_at_empty();
+  test_is_array_null_safe();
 
   return EXIT_SUCCESS;
 }

@@ -364,7 +364,7 @@ Object* array_at(Object* array, size_t index) {
 }
 
 bool is_array(Object* array) {
-  return array->type == TYPE_ARRAY;
+  return array != NULL && array->type == TYPE_ARRAY;
 }
 
 bool is_collection(Object* obj) {
