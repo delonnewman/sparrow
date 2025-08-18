@@ -7,9 +7,12 @@ Object* object_allocate() {
 
 void object_destroy(Object *object) {
   switch(object->type) {
+  case TYPE_BOOL:
+  case TYPE_NULL:
+    // ignore singletons
+    break;
   case TYPE_INT:
   case TYPE_FLOAT:
-  case TYPE_BOOL:
     free(object);
     break;
   case TYPE_STRING:
@@ -194,6 +197,10 @@ Object* list_empty() {
 }
 
 Object* list_cons(Object* value, Object* list) {
+  if (list->type == TYPE_NULL) {
+    list = list_empty();
+  }
+
   if (list->type != TYPE_CONS) {
     fprintf(stderr, "TypeError: cannot cons type: %s", type_name(list));
     exit(0);
@@ -275,6 +282,8 @@ char* type_name(Object* obj) {
     return "Sym";
   case TYPE_CONS:
     return "Cons";
+  case TYPE_NULL:
+    return "Null";
   default:
     fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
     exit(0);

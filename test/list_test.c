@@ -21,6 +21,17 @@ void test_cons() {
   assert(count(list) == 1);
 }
 
+void test_cons_and_null() {
+  Object* obj = object_null();
+  Object* list = list_cons(object_integer(1), obj);
+
+  assert(is_null(obj));
+  assert(!is_null(list_next(list)));
+
+  assert(is_equal(list_first(list), object_integer(1)));
+  assert(count(list) == 1);
+}
+
 void test_first() {
   Object* empty = list_empty();
 
@@ -39,6 +50,7 @@ int main() {
   test_cons();
   test_first();
   test_next();
+  test_cons_and_null();
 
   return EXIT_SUCCESS;
 }
