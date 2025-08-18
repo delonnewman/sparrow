@@ -134,11 +134,16 @@ Object* object_false() {
 }
 
 void object_copy(Object* target, Object* source) {
+  // singleton objects are a special case
+  if ((IS_TYPE(source, TYPE_BOOL)) || (IS_TYPE(source, TYPE_NULL))) {
+    target = source;
+    return;
+  }
+
   target->type = source->type;
 
   switch (source->type) {
   case TYPE_INT:
-  case TYPE_BOOL:
     target->int_val = source->int_val;
     break;
   case TYPE_FLOAT:
