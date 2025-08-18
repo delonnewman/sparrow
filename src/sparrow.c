@@ -285,7 +285,8 @@ bool is_bool(Object *obj) {
 }
 
 bool is_false(Object *obj) {
-  return (IS_TYPE(obj, TYPE_NULL)) || (IS_TYPE(obj, TYPE_BOOL) && obj->int_val == 0);
+  return IS_OBJECT(obj) &&
+    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && obj->int_val == 0));
 }
 
 bool is_true(Object *obj) {
