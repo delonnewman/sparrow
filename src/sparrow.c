@@ -379,6 +379,11 @@ bool is_empty(Object* list) {
 }
 
 void print(Object* obj) {
+  if (IS_OBJECT(obj) == false) {
+    fprintf(stderr, "TypeError: only objects can be printed %s", type_name(obj));
+    exit(0);
+  }
+
   switch(obj->type) {
   case TYPE_INT:
     printf("%ld", obj->int_val);
