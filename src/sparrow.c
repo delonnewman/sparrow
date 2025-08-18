@@ -484,7 +484,6 @@ bool is_equal(Object* object1, Object* object2) {
     }
   }
   else if (is_number(object1) && is_number(object2)) {
-    // TODO: add zero support
     if (is_integer(object1)) {
       return object1->int_val == object2->float_val;
     }

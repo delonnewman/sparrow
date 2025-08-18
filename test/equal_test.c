@@ -11,6 +11,10 @@ void test_float_equality() {
   assert(!is_equal(object_float(1.0), object_float(1.1)));
 }
 
+void test_zero_equality() {
+  assert(is_equal(object_float(0.0), object_integer(0)));
+}
+
 void test_char_equality() {
   assert(is_equal(object_char('a'), object_char('a')));
   assert(!is_equal(object_char('b'), object_char('a')));
@@ -49,6 +53,7 @@ int main() {
   test_symbol_equality();
   test_list_equality();
   test_numerical_equality();
+  test_zero_equality();
 
   return EXIT_SUCCESS;
 }
