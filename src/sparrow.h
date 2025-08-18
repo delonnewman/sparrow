@@ -50,8 +50,8 @@ Object* object_false();
 
 Object* list_empty();
 Object* list_cons(Object* value, Object* list);
-Object* list_car(Object* list);
-Object* list_cdr(Object* list);
+Object* list_first(Object* list);
+Object* list_next(Object* list);
 void list_print(Object* list);
 bool is_list(Object* list);
 

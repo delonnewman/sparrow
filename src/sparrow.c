@@ -19,7 +19,7 @@ void object_destroy(Object *object) {
     break;
   case TYPE_CONS:
     free(object);
-    object_destroy(list_cdr(object));
+    object_destroy(list_next(object));
     break;
   default:
     fprintf(stderr, "TypeError: invalid type");
@@ -47,8 +47,16 @@ Object* object_null() {
   return object;
 }
 
+bool is_object(Object* obj) {
+ return obj->type == TYPE_INT || obj->type == TYPE_BOOL ||
+   obj->type == TYPE_FLOAT || obj->type == TYPE_CHAR ||
+   obj->type == TYPE_STRING || obj->type == TYPE_SYMBOL ||
+   obj->type == TYPE_CONS || obj->type == TYPE_ARRAY ||
+   obj->type == TYPE_MAP || obj->type == TYPE_NULL;
+}
+
 bool is_null(Object* obj) {
-  return obj->type == TYPE_NULL;
+  return obj != NULL && obj->type == TYPE_NULL;
 }
 
 Object* object_integer(long value) {
@@ -203,19 +211,29 @@ Object* list_cons(Object* value, Object* list) {
   return obj;
 }
 
-Object* list_car(Object* list) {
+Object* list_first(Object* list) {
   if (list->type != TYPE_CONS) {
     fprintf(stderr, "TypeError: cannot get the car of a %s", type_name(list));
     exit(0);
   }
 
+  Object* value = list->car;
+  if (value == NULL) {
+    return object_null();
+  }
+
   return list->car;
 }
 
-Object* list_cdr(Object *list) {
+Object* list_next(Object *list) {
   if (list->type != TYPE_CONS) {
     fprintf(stderr, "TypeError: cannot get the cdr of a %s", type_name(list));
     exit(0);
+  }
+
+  Object* value = list->cdr;
+  if (value == NULL) {
+    return object_null();
   }
 
   return list->cdr;
