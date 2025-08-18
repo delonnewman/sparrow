@@ -340,10 +340,6 @@ void array_set(Object *array, size_t index, Object* value) {
     exit(0);
   }
 
-  if (array->count == 0) {
-    // TODO: not sure what to do in this case
-  }
-
   if (index >= array->count) {
     fprintf(stderr, "TypeError: out of bounds index for an array with a length of %zu", array->count);
     exit(0);
@@ -359,7 +355,7 @@ Object* array_at(Object* array, size_t index) {
     exit(0);
   }
 
-  if (array->count == 0) {
+  if (index >= array->count) {
     return object_null();
   }
 
