@@ -27,7 +27,7 @@ typedef struct Object {
   // collections
   size_t count;
 
-  size_t* array_ref;
+  struct Object** array_ref;
 
   // list car and cdr
   struct Object* car;
@@ -54,8 +54,8 @@ void list_print(Object* list);
 bool is_list(Object* list);
 
 Object* make_array(size_t size);
-Object* array_at(Object* array, int index);
-void array_set(Object* array, int index, Object* value);
+Object* array_at(Object* array, size_t index);
+void array_set(Object* array, size_t index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 

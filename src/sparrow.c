@@ -1,10 +1,5 @@
 #include "sparrow.h"
 
-int die(char* type, char* message) {
-  fprintf(stderr, "%s: '%s'\n", type, message);
-  exit(0);
-}
-
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
   return object;
@@ -260,11 +255,44 @@ Object* make_array(size_t size) {
   Object* object  = object_allocate();
   object->type    = TYPE_ARRAY;
 
-  size_t array[size];
+  Object* array[size];
   object->array_ref = array;
   object->count = size;
 
   return object;
+}
+
+void array_set(Object *array, size_t index, Object* value) {
+  if (!is_array(array)) {
+    fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
+    exit(0);
+  }
+
+  if (array->count == 0) {
+    // TODO: not sure what to do in this case
+  }
+
+  if (index >= array->count) {
+    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %zu", array->count);
+    exit(0);
+  }
+
+  Object** storage = array->array_ref;
+  storage[index] = value;
+}
+
+Object* array_at(Object* array, size_t index) {
+  if (!is_array(array)) {
+    fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
+    exit(0);
+  }
+
+  if (array->count == 0) {
+    // TODO: return Null object
+  }
+
+  Object** storage = array->array_ref;
+  return storage[index];
 }
 
 bool is_array(Object* array) {
