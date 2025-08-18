@@ -166,18 +166,6 @@ void object_copy(Object* target, Object* source) {
   }
 }
 
-bool is_zero(Object* number) {
-  switch(number->type) {
-    case TYPE_INT:
-      return number->int_val == 0;
-    case TYPE_FLOAT:
-      return number->float_val == 0.0;
-    default:
-      fprintf(stderr, "TypeError: zero? only works on numeric types");
-      exit(0);
-  }
-}
-
 Object* EMPTY = NULL;
 
 Object* list_empty() {
@@ -426,12 +414,26 @@ void say(Object* obj) {
   printf("\n");
 }
 
+bool is_zero(Object* number) {
+  if (number == NULL) return false;
+
+  switch(number->type) {
+    case TYPE_INT:
+      return number->int_val == 0;
+    case TYPE_FLOAT:
+      return number->float_val == 0.0;
+    default:
+      fprintf(stderr, "TypeError: zero? only works on numeric types");
+      exit(0);
+  }
+}
+
 bool is_integer(Object* obj) {
-  return obj->type == TYPE_INT;
+  return obj != NULL && obj->type == TYPE_INT;
 }
 
 bool is_float(Object* obj) {
-  return obj->type == TYPE_FLOAT;
+  return obj != NULL && obj->type == TYPE_FLOAT;
 }
 
 bool is_number(Object* obj) {

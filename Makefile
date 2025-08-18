@@ -16,6 +16,7 @@ clean:
 	rm -f test/array_test$(EXE)
 	rm -f test/null_test$(EXE)
 	rm -f test/bool_test$(EXE)
+	rm -f test/object_test$(EXE)
 
 $(NAME).o:
 	$(CC) -c $(CFLAGS) -o $@ $(SRC)/$(NAME).c
@@ -41,12 +42,16 @@ test/null_test$(EXE): $(NAME).o
 test/bool_test$(EXE): $(NAME).o
 	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/bool_test.c $(NAME).o $(LDLIBS)
 
+test/object_test$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/object_test.c $(NAME).o $(LDLIBS)
+
 test: test/list_test$(EXE) test/equal_test$(EXE) test/array_test$(EXE) \
-test/null_test$(EXE) test/bool_test$(EXE)
+test/null_test$(EXE) test/bool_test$(EXE) test/object_test$(EXE)
 	./test/list_test$(EXE)
 	./test/equal_test$(EXE)
 	./test/array_test$(EXE)
 	./test/null_test$(EXE)
+	./test/bool_test$(EXE)
 	./test/bool_test$(EXE)
 
 .PHONY: all clean run test
