@@ -52,11 +52,7 @@ Object* object_null() {
 }
 
 bool is_object(Object* obj) {
- return obj->type == TYPE_INT || obj->type == TYPE_BOOL ||
-   obj->type == TYPE_FLOAT || obj->type == TYPE_CHAR ||
-   obj->type == TYPE_STRING || obj->type == TYPE_SYMBOL ||
-   obj->type == TYPE_CONS || obj->type == TYPE_ARRAY ||
-   obj->type == TYPE_MAP || obj->type == TYPE_NULL;
+ return obj != NULL && obj->sp_obj;
 }
 
 bool is_null(Object* obj) {

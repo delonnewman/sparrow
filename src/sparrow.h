@@ -66,6 +66,7 @@ bool is_array(Object* array);
 size_t count(Object* list);
 bool is_collection(Object* list);
 
+bool is_object(Object* obj);
 bool is_null(Object* obj);
 bool is_equal(Object* obj1, Object* obj2);
 bool is_zero(Object* obj);
