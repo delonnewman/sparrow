@@ -360,7 +360,7 @@ Object* array_at(Object* array, size_t index) {
   }
 
   if (array->count == 0) {
-    // TODO: return Null object
+    return object_null();
   }
 
   Object** storage = array->array_ref;

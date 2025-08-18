@@ -12,9 +12,16 @@ void test_array_at_and_set() {
   assert(is_equal(array_at(array, 0), object_integer(1)));
 }
 
+void test_array_at_empty() {
+  Object* array = make_array(0);
+
+  assert(is_null(array_at(array, 0)));
+}
+
 int main() {
   test_make_array();
   test_array_at_and_set();
+  test_array_at_empty();
 
   return EXIT_SUCCESS;
 }
