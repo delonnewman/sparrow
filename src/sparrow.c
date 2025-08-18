@@ -263,7 +263,7 @@ void list_print(Object* list) {
 }
 
 bool is_list(Object* list) {
-  return list->type == TYPE_CONS;
+  return list != NULL && list->type == TYPE_CONS;
 }
 
 char* type_name(Object* obj) {
@@ -457,6 +457,11 @@ bool list_is_equal(Object* list1, Object* list2) {
 }
 
 bool is_equal(Object* object1, Object* object2) {
+  if (object1 == NULL || object2 == NULL) {
+    fprintf(stderr, "TypeError: only objects support equality\n");
+    exit(0);
+  }
+
   if (object1->type == object2->type) {
     switch (object1->type) {
       case TYPE_INT:
@@ -477,6 +482,7 @@ bool is_equal(Object* object1, Object* object2) {
     }
   }
   else if (is_number(object1) && is_number(object2)) {
+    // TODO: add zero support
     if (is_integer(object1)) {
       return object1->int_val == object2->float_val;
     }

@@ -44,6 +44,10 @@ void test_next() {
   assert(is_null(list_next(empty)));
 }
 
+void test_is_list_null_safe() {
+  assert(!is_list(NULL));
+}
+
 int main() {
   test_empty();
   test_empty_count();
@@ -51,6 +55,7 @@ int main() {
   test_first();
   test_next();
   test_cons_and_null();
+  test_is_list_null_safe();
 
   return EXIT_SUCCESS;
 }
