@@ -220,9 +220,9 @@ bool is_list(Object* list) {
 char* type_name(Object* obj) {
   switch (obj->type) {
   case TYPE_INT:
-    return "Int";
+    return "Num[Int]";
   case TYPE_FLOAT:
-    return "Float";
+    return "Num[Float]";
   case TYPE_BOOL:
     return "Bool";
   case TYPE_CHAR:
