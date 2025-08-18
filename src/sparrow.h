@@ -30,8 +30,7 @@ typedef struct Object {
 
   struct Object** array_ref;
 
-  // list car and cdr
-  struct Object* car;
+  struct Object* ref;
   struct Object* cdr;
 } Object;
 

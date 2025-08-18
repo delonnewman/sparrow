@@ -157,7 +157,7 @@ void object_copy(Object* target, Object* source) {
     break;
   case TYPE_CONS:
     target->count = source->count;
-    target->car   = source->car;
+    target->ref   = source->ref;
     target->cdr   = source->cdr;
     break;
   default:
@@ -187,7 +187,7 @@ Object* list_empty() {
 
   Object* obj = malloc(sizeof(Object));
   obj->type   = TYPE_CONS;
-  obj->car    = NULL;
+  obj->ref    = NULL;
   obj->cdr    = NULL;
   obj->count  = 0;
 
@@ -209,8 +209,8 @@ Object* list_cons(Object* value, Object* list) {
   Object* obj = object_allocate();
   obj->type = TYPE_CONS;
 
-  obj->car = object_allocate();
-  object_copy(obj->car, value);
+  obj->ref = object_allocate();
+  object_copy(obj->ref, value);
 
   obj->cdr = list;
   obj->count = list->count + 1;
@@ -220,16 +220,16 @@ Object* list_cons(Object* value, Object* list) {
 
 Object* list_first(Object* list) {
   if (list->type != TYPE_CONS) {
-    fprintf(stderr, "TypeError: cannot get the car of a %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot get the first element of a %s", type_name(list));
     exit(0);
   }
 
-  Object* value = list->car;
+  Object* value = list->ref;
   if (value == NULL) {
     return object_null();
   }
 
-  return list->car;
+  return value;
 }
 
 Object* list_next(Object *list) {
@@ -252,7 +252,7 @@ void list_print(Object* list) {
   Object* current = list;
 
   while (!is_empty(current)) {
-    print(current->car);
+    print(current->ref);
     if (!is_empty(current->cdr)) {
       putchar(' ');
     }
@@ -448,7 +448,7 @@ bool list_is_equal(Object* list1, Object* list2) {
   Object* current2 = list2;
 
   while (!is_empty(current1) && !is_empty(current2)) {
-    if (!is_equal(current1->car, current2->car)) return false;
+    if (!is_equal(current1->ref, current2->ref)) return false;
     current1 = current1->cdr;
     current2 = current2->cdr;
   }
