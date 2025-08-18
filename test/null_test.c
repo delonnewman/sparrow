@@ -9,9 +9,14 @@ void test_null_count() {
     assert(count(object_null()) == 0);
 }
 
+void test_null_is_empty() {
+    assert(is_empty(object_null()));
+}
+
 int main() {
   test_object_null();
   test_null_count();
+  test_null_is_empty();
 
   return EXIT_SUCCESS;
 }
