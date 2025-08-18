@@ -308,11 +308,7 @@ bool bool_to_int(Object* obj) {
     exit(0);
   }
 
-  if (is_false(obj)) {
-    return 0;
-  }
-
-  return 1;
+  return obj->int_val;
 }
 
 Object* int_to_bool(bool value) {
