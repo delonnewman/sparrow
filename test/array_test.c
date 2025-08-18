@@ -14,6 +14,7 @@ void test_array_at_and_set() {
 
 int main() {
   test_make_array();
+  test_array_at_and_set();
 
   return EXIT_SUCCESS;
 }
