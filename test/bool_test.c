@@ -4,10 +4,12 @@
 void test_object_true() {
     assert(is_true(object_true()));
     assert(!is_true(object_false()));
+    assert(!is_true(object_null()));
 }
 
 void test_object_false() {
     assert(is_false(object_false()));
+    assert(is_false(object_null()));
     assert(!is_false(object_true()));
 }
 
