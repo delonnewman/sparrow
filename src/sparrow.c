@@ -366,7 +366,7 @@ bool is_countable(Object* obj) {
   return is_null(obj) || is_collection(obj);
 }
 
-size_t count(Object *col) {
+size_t collection_count(Object *col) {
   if (!is_countable(col)) {
     fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(col));
     exit(0);
@@ -376,7 +376,7 @@ size_t count(Object *col) {
 }
 
 bool is_empty(Object* list) {
-  return count(list) == 0;
+  return collection_count(list) == 0;
 }
 
 void print(Object* obj) {

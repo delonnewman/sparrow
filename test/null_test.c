@@ -6,7 +6,7 @@ void test_object_null() {
 }
 
 void test_null_count() {
-    assert(count(object_null()) == 0);
+    assert(collection_count(object_null()) == 0);
 }
 
 void test_null_is_empty() {

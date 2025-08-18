@@ -10,7 +10,7 @@ void test_empty() {
 void test_empty_count() {
   Object* list = list_empty();
 
-  assert(count(list) == 0);
+  assert(collection_count(list) == 0);
 }
 
 void test_cons() {
@@ -18,7 +18,7 @@ void test_cons() {
   list = list_cons(object_integer(1), list);
 
   assert(is_equal(list_first(list), object_integer(1)));
-  assert(count(list) == 1);
+  assert(collection_count(list) == 1);
 }
 
 void test_cons_and_null() {
@@ -29,7 +29,7 @@ void test_cons_and_null() {
   assert(!is_null(list_next(list)));
 
   assert(is_equal(list_first(list), object_integer(1)));
-  assert(count(list) == 1);
+  assert(collection_count(list) == 1);
 }
 
 void test_first() {

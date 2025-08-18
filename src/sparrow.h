@@ -67,7 +67,7 @@ void array_set(Object* array, size_t index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 
-size_t count(Object* list);
+size_t collection_count(Object* list);
 bool is_collection(Object* list);
 
 bool is_object(Object* obj);
