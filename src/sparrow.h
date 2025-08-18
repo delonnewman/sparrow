@@ -28,10 +28,12 @@ typedef struct Object {
   // collections
   size_t count;
 
+  // arrays
   struct Object** array_ref;
 
+  // dynamic objects and lists
   struct Object* ref;
-  struct Object* cdr;
+  struct Object* next;
 } Object;
 
 Object* object_allocate();

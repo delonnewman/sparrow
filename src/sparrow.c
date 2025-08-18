@@ -158,7 +158,7 @@ void object_copy(Object* target, Object* source) {
   case TYPE_CONS:
     target->count = source->count;
     target->ref   = source->ref;
-    target->cdr   = source->cdr;
+    target->next  = source->next;
     break;
   default:
     fprintf(stderr, "TypeError: unknown type '%s'", type_name(source));
@@ -188,7 +188,7 @@ Object* list_empty() {
   Object* obj = malloc(sizeof(Object));
   obj->type   = TYPE_CONS;
   obj->ref    = NULL;
-  obj->cdr    = NULL;
+  obj->next   = NULL;
   obj->count  = 0;
 
   EMPTY = obj;
@@ -212,7 +212,7 @@ Object* list_cons(Object* value, Object* list) {
   obj->ref = object_allocate();
   object_copy(obj->ref, value);
 
-  obj->cdr = list;
+  obj->next  = list;
   obj->count = list->count + 1;
 
   return obj;
@@ -234,16 +234,16 @@ Object* list_first(Object* list) {
 
 Object* list_next(Object *list) {
   if (list->type != TYPE_CONS) {
-    fprintf(stderr, "TypeError: cannot get the cdr of a %s", type_name(list));
+    fprintf(stderr, "TypeError: cannot get the next of a %s", type_name(list));
     exit(0);
   }
 
-  Object* value = list->cdr;
+  Object* value = list->next;
   if (value == NULL) {
     return object_null();
   }
 
-  return list->cdr;
+  return value;
 }
 
 void list_print(Object* list) {
@@ -253,10 +253,10 @@ void list_print(Object* list) {
 
   while (!is_empty(current)) {
     print(current->ref);
-    if (!is_empty(current->cdr)) {
+    if (!is_empty(current->next)) {
       putchar(' ');
     }
-    current = current->cdr;
+    current = current->next;
   }
   
   putchar(')');
@@ -449,8 +449,8 @@ bool list_is_equal(Object* list1, Object* list2) {
 
   while (!is_empty(current1) && !is_empty(current2)) {
     if (!is_equal(current1->ref, current2->ref)) return false;
-    current1 = current1->cdr;
-    current2 = current2->cdr;
+    current1 = current1->next;
+    current2 = current2->next;
   }
 
   return true;
