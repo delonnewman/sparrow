@@ -2,6 +2,7 @@
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
+  object->sp_obj = true;
   return object;
 }
 

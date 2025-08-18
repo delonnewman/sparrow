@@ -17,6 +17,7 @@ enum {
 };
 
 typedef struct Object {
+  bool sp_obj;
   int type;
   long int_val;
   double float_val;
