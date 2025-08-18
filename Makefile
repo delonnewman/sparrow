@@ -52,6 +52,6 @@ test/null_test$(EXE) test/bool_test$(EXE) test/object_test$(EXE)
 	./test/array_test$(EXE)
 	./test/null_test$(EXE)
 	./test/bool_test$(EXE)
-	./test/bool_test$(EXE)
+	./test/object_test$(EXE)
 
 .PHONY: all clean run test
