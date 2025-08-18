@@ -275,16 +275,16 @@ char* type_name(Object* obj) {
   }
 }
 
+bool is_bool(Object *obj) {
+  return is_object(obj) && obj->type == TYPE_BOOL;
+}
+
 bool is_false(Object *obj) {
-  return obj->type == TYPE_BOOL && obj->int_val == 0;
+  return is_bool(obj) && obj->int_val == 0;
 }
 
 bool is_true(Object *obj) {
   return !is_false(obj);
-}
-
-bool is_bool(Object *obj) {
-  return obj->type == TYPE_BOOL;
 }
 
 bool bool_to_int(Object* obj) {
