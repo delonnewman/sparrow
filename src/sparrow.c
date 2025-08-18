@@ -1,8 +1,5 @@
 #include "sparrow.h"
 
-#define IS_OBJECT(O) (O != NULL && O->sp_obj == true)
-#define IS_TYPE(O, T) IS_OBJECT(O) && O->type == T
-
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
   object->sp_obj = true;
