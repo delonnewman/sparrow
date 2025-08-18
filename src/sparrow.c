@@ -247,6 +247,31 @@ bool is_true(Object *obj) {
   return !is_false(obj);
 }
 
+bool is_bool(Object *obj) {
+  return obj->type == TYPE_BOOL;
+}
+
+bool bool_to_int(Object* obj) {
+  if (!is_bool(obj)) {
+    fprintf(stderr, "TypeError: invalid operation on %s", type_name(obj));
+    exit(0);
+  }
+
+  if (is_false(obj)) {
+    return 0;
+  }
+
+  return 1;
+}
+
+Object* int_to_bool(bool value) {
+  if (value) {
+    return object_true();
+  }
+
+  return object_false();
+}
+
 void object_dump(Object* obj) {
   fprintf(stderr, "#<%s>\n", type_name(obj));
 }
@@ -264,7 +289,7 @@ Object* make_array(size_t size) {
 
 void array_set(Object *array, size_t index, Object* value) {
   if (!is_array(array)) {
-    fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
+    fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
   }
 

@@ -13,6 +13,7 @@ enum {
   TYPE_CONS   = 6,
   TYPE_ARRAY  = 7,
   TYPE_MAP    = 8,
+  TYPE_NULL   = 9,
 };
 
 typedef struct Object {
@@ -67,9 +68,14 @@ bool is_zero(Object* obj);
 bool is_empty(Object* list);
 bool is_false(Object* obj);
 bool is_true(Object* obj);
+bool is_bool(Object* obj);
 bool is_integer(Object* obj);
 bool is_float(Object* obj);
 bool is_number(Object* obj);
+
+// Native to object conversions
+bool bool_to_int(Object* obj);
+Object* int_to_bool(bool);
 
 char* type_name(Object* obj);
 void print(Object* obj);
