@@ -56,7 +56,7 @@ bool is_object(Object* obj) {
 }
 
 bool is_null(Object* obj) {
-  return obj != NULL && obj->type == TYPE_NULL;
+  return is_object(obj) && obj->type == TYPE_NULL;
 }
 
 Object* object_integer(long value) {
