@@ -7,16 +7,16 @@
 #define IS_TYPE(O, T) IS_OBJECT(O) && O->type == T
 
 enum {
-  TYPE_INT    = 0,
-  TYPE_BOOL   = 1,
-  TYPE_FLOAT  = 2,
-  TYPE_CHAR   = 3,
-  TYPE_STRING = 4,
-  TYPE_SYMBOL = 5,
-  TYPE_CONS   = 6,
-  TYPE_ARRAY  = 7,
-  TYPE_MAP    = 8,
-  TYPE_NULL   = 9,
+  TYPE_NULL,
+  TYPE_INT,
+  TYPE_FLOAT,
+  TYPE_BOOL,
+  TYPE_CHAR,
+  TYPE_STRING,
+  TYPE_SYMBOL,
+  TYPE_CONS,
+  TYPE_ARRAY,
+  TYPE_MAP,
 };
 
 typedef struct Object {
