@@ -175,7 +175,7 @@ Object* list_empty() {
     return EMPTY;
   }
 
-  Object* obj = malloc(sizeof(Object));
+  Object* obj = object_allocate();
   obj->type   = TYPE_CONS;
   obj->ref    = NULL;
   obj->next   = NULL;
@@ -253,7 +253,7 @@ void list_print(Object* list) {
 }
 
 bool is_list(Object* list) {
-  return list != NULL && list->type == TYPE_CONS;
+  return IS_TYPE(list, TYPE_CONS);
 }
 
 char* type_name(Object* obj) {
