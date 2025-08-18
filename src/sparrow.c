@@ -379,8 +379,12 @@ bool is_collection(Object* obj) {
   return is_array(obj) || is_list(obj);
 }
 
+bool is_countable(Object* obj) {
+  return is_null(obj) || is_collection(obj);
+}
+
 size_t count(Object *col) {
-  if (!is_collection(col)) {
+  if (!is_countable(col)) {
     fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(col));
     exit(0);
   }
@@ -401,8 +405,8 @@ void print(Object* obj) {
     printf("%f", obj->float_val);
     break;
   case TYPE_BOOL:
-    if (is_false(obj)) printf("%s", "false");
-    else printf("%s", "true");
+    if (is_false(obj)) printf("false");
+    else printf("true");
     break;
   case TYPE_STRING:
     printf("\"%s\"", obj->str_val);
@@ -415,6 +419,9 @@ void print(Object* obj) {
     break;
   case TYPE_CONS:
     list_print(obj);
+    break;
+  case TYPE_NULL:
+    printf("null");
     break;
   default:
     fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
