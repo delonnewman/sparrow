@@ -1,5 +1,8 @@
 #include "sparrow.h"
 
+#define IS_OBJECT(O) (O != NULL && O->sp_obj == true)
+#define IS_TYPE(O, T) IS_OBJECT(O) && O->type == T
+
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
   object->sp_obj = true;
@@ -52,11 +55,11 @@ Object* object_null() {
 }
 
 bool is_object(Object* obj) {
- return obj != NULL && obj->sp_obj;
+ return IS_OBJECT(obj);
 }
 
 bool is_null(Object* obj) {
-  return is_object(obj) && obj->type == TYPE_NULL;
+  return IS_TYPE(obj, TYPE_NULL);
 }
 
 Object* object_integer(long value) {
@@ -182,11 +185,11 @@ Object* list_empty() {
 }
 
 Object* list_cons(Object* value, Object* list) {
-  if (list->type == TYPE_NULL) {
+  if (IS_TYPE(list, TYPE_NULL)) {
     list = list_empty();
   }
 
-  if (list->type != TYPE_CONS) {
+  if (IS_TYPE(list, TYPE_CONS) == false) {
     fprintf(stderr, "TypeError: cannot cons type: %s", type_name(list));
     exit(0);
   }
@@ -204,7 +207,7 @@ Object* list_cons(Object* value, Object* list) {
 }
 
 Object* list_first(Object* list) {
-  if (list->type != TYPE_CONS) {
+  if (IS_TYPE(list, TYPE_CONS) == false) {
     fprintf(stderr, "TypeError: cannot get the first element of a %s", type_name(list));
     exit(0);
   }
@@ -218,7 +221,7 @@ Object* list_first(Object* list) {
 }
 
 Object* list_next(Object *list) {
-  if (list->type != TYPE_CONS) {
+  if (IS_TYPE(list, TYPE_CONS) == false) {
     fprintf(stderr, "TypeError: cannot get the next of a %s", type_name(list));
     exit(0);
   }
@@ -276,15 +279,15 @@ char* type_name(Object* obj) {
 }
 
 bool is_bool(Object *obj) {
-  return is_object(obj) && obj->type == TYPE_BOOL;
+  return IS_TYPE(obj, TYPE_BOOL);
 }
 
 bool is_false(Object *obj) {
-  return is_bool(obj) && obj->int_val == 0;
+  return IS_TYPE(obj, TYPE_BOOL) && obj->int_val == 0;
 }
 
 bool is_true(Object *obj) {
-  return !is_false(obj);
+  return IS_TYPE(obj, TYPE_BOOL) && obj->int_val == 1;
 }
 
 bool bool_to_int(Object* obj) {
@@ -349,7 +352,7 @@ Object* array_at(Object* array, size_t index) {
 }
 
 bool is_array(Object* array) {
-  return array != NULL && array->type == TYPE_ARRAY;
+  return IS_TYPE(array, TYPE_ARRAY);
 }
 
 bool is_collection(Object* obj) {
@@ -426,15 +429,15 @@ bool is_zero(Object* number) {
 }
 
 bool is_integer(Object* obj) {
-  return obj != NULL && obj->type == TYPE_INT;
+  return IS_TYPE(obj, TYPE_INT);
 }
 
 bool is_float(Object* obj) {
-  return obj != NULL && obj->type == TYPE_FLOAT;
+  return IS_TYPE(obj, TYPE_FLOAT);
 }
 
 bool is_number(Object* obj) {
-  return is_integer(obj) || is_float(obj);
+  return (IS_TYPE(obj, TYPE_INT)) || (IS_TYPE(obj, TYPE_FLOAT));
 }
 
 bool list_is_equal(Object* list1, Object* list2) {
@@ -456,7 +459,7 @@ bool list_is_equal(Object* list1, Object* list2) {
 }
 
 bool is_equal(Object* object1, Object* object2) {
-  if (object1 == NULL || object2 == NULL) {
+  if (IS_OBJECT(object1) == false || IS_OBJECT(object2) == false) {
     fprintf(stderr, "TypeError: only objects support equality\n");
     exit(0);
   }
