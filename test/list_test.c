@@ -44,8 +44,23 @@ void test_next() {
   assert(is_null(list_next(empty)));
 }
 
-void test_is_list_null_safe() {
+void test_is_list() {
+  Object* list = list_empty();
+
+  assert(is_list(list));
+  assert(is_cons(list));
+}
+
+void test_is_cons() {
+  Object* pair = pair_cons(object_integer(1), object_integer(2));
+
+  assert(is_pair(pair));
+  assert(is_cons(pair));
+}
+
+void test_list_null_safe_predicates() {
   assert(!is_list(NULL));
+  assert(!is_cons(NULL));
 }
 
 int main() {
@@ -55,7 +70,9 @@ int main() {
   test_first();
   test_next();
   test_cons_and_null();
-  test_is_list_null_safe();
+  test_list_null_safe_predicates();
+  test_is_list();
+  test_is_cons();
 
   return EXIT_SUCCESS;
 }

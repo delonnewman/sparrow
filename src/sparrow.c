@@ -186,6 +186,18 @@ Object* list_empty() {
   return obj;
 }
 
+Object* pair_cons(Object* first, Object* second) {
+  Object* obj = object_allocate();
+  obj->type = TYPE_CONS;
+
+  obj->ref = object_allocate();
+  obj->count = -1;
+  object_copy(obj->ref, first);
+  /* object_copy(obj->next, second); */
+
+  return obj;
+}
+
 Object* list_cons(Object* value, Object* list) {
   if (IS_TYPE(list, TYPE_NULL)) {
     list = list_empty();
@@ -252,8 +264,16 @@ void list_print(Object* list) {
   putchar(')');
 }
 
-bool is_list(Object* list) {
+bool is_cons(Object* list) {
   return IS_TYPE(list, TYPE_CONS);
+}
+
+bool is_pair(Object* list) {
+  return (IS_TYPE(list, TYPE_CONS)) && list->count == -1;
+}
+
+bool is_list(Object* list) {
+  return (IS_TYPE(list, TYPE_CONS)) && list->count != -1;
 }
 
 char* type_name(Object* obj) {
@@ -325,14 +345,14 @@ Object* make_array(size_t size) {
   return object;
 }
 
-void array_set(Object *array, size_t index, Object* value) {
+void array_set(Object *array, int index, Object* value) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
   }
 
   if (index >= array->count) {
-    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %zu", array->count);
+    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %d", array->count);
     exit(0);
   }
 
@@ -340,7 +360,7 @@ void array_set(Object *array, size_t index, Object* value) {
   storage[index] = value;
 }
 
-Object* array_at(Object* array, size_t index) {
+Object* array_at(Object* array, int index) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
     exit(0);

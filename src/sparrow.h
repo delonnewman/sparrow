@@ -31,7 +31,7 @@ typedef struct Object {
   char* str_val;
 
   // collections
-  size_t count;
+  int count;
 
   // arrays
   struct Object** array_ref;
@@ -55,15 +55,18 @@ Object* object_true();
 Object* object_false();
 
 Object* list_empty();
+Object* pair_cons(Object* first, Object* second);
 Object* list_cons(Object* value, Object* list);
 Object* list_first(Object* list);
 Object* list_next(Object* list);
 void list_print(Object* list);
-bool is_list(Object* list);
+bool is_cons(Object* cons);
+bool is_pair(Object* cons);
+bool is_list(Object* cons);
 
 Object* make_array(size_t size);
-Object* array_at(Object* array, size_t index);
-void array_set(Object* array, size_t index, Object* value);
+Object* array_at(Object* array, int index);
+void array_set(Object* array, int index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 
