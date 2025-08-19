@@ -388,7 +388,7 @@ void array_print(Object* array) {
   printf("[");
   for (long i = 0; i < array->length; i++) {
     print(array_at(array, i));
-    if (i < array->length - 1) {
+    if (i < (array->length - 1)) {
       printf(", ");
     }
   }
@@ -428,36 +428,35 @@ void map_set(Object* map, Object* key, Object* value) {
   printf("Setting map key: ");
   print(key); printf(" => "); say(value);
 
+  Object* bucket = map_get_bucket(map, key);
+  printf("Bucket: ");
+  say(bucket);
+
+  Object* pair = make_array(2);
+  array_set(pair, 0, key);
+  array_set(pair, 1, value);
+
+  map_set_bucket(map, key, list_cons(pair, bucket));
+  map->length += 1;
+}
+
+Object* map_get_bucket(Object* map, Object* key) {
   long key_hash = object_hash_code(key);
   printf("Key hash: %ld\n", key_hash);
 
   size_t index = key_hash % map->int_val;
   printf("Storage index: %zu\n", index);
 
-  Object* bucket = map->array_ref[index];
-  if (is_list(bucket)) {
-    printf("Bucket: ");
-    say(bucket);
-  } else {
-    printf("Bucket is not set\n");
-    bucket = list_empty();
-  }
-
-  Object* pair = make_array(2);
-  array_set(pair, 0, key);
-  array_set(pair, 1, value);
-
-  bucket = list_cons(pair, bucket);
-  map->array_ref[index] = bucket;
-
-  map->length += 1;
+  assert(is_list(map->array_ref[index]));
+  return map->array_ref[index];
 }
 
-Object* map_get_bucket(Object* map, Object* key) {
+void map_set_bucket(Object* map, Object* key, Object* bucket) {
   long key_hash = object_hash_code(key);
   size_t index = key_hash % map->int_val;
 
-  return map->array_ref[index];
+  assert(is_list(bucket));
+  map->array_ref[index] = bucket;
 }
 
 Object* map_get(Object* map, Object* key) {
@@ -516,8 +515,11 @@ void print(Object* obj) {
     printf("%f:%s", obj->float_val, type_name(obj));
     break;
   case TYPE_BOOL:
-    if (is_true(obj)) printf("true");
-    else printf("false");
+    if (is_true(obj)) {
+      printf("true");
+    } else {
+      printf("false");
+    }
     break;
   case TYPE_STRING:
     printf("\"%s\"", obj->str_val);

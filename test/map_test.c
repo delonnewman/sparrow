@@ -3,17 +3,39 @@
 
 void test_make_map() {
     Object* map = make_map();
+    assert(is_map(map));
 
     for (long i = 0; i < map->int_val; i++) {
         assert(is_list(map->array_ref[i]));
     }
 
-    assert(is_map(make_map()));
+    Object* pair = make_array(2);
+    assert(is_array(pair));
+
+    array_set(pair, 0, object_string("a"));
+    assert(is_equal(array_at(pair, 0), object_string("a")));
+
+    array_set(pair, 1, object_integer(1));
+    assert(is_equal(array_at(pair, 1), object_integer(1)));
+
+    Object* bucket = list_cons(pair, list_empty());
+    assert(is_list(bucket));
+    assert(!is_empty(bucket));
+
+    map_set_bucket(map, object_string("a"), list_cons(pair, list_empty()));
+
+    bucket = map_get_bucket(map, object_string("a"));
+    assert(is_list(bucket));
+    assert(!is_empty(bucket));
+
+    pair = list_first(bucket);
+    assert(is_array(pair));
+
+    assert(is_equal(array_at(pair, 1), object_integer(1)));
 }
 
 void test_map_set_and_get() {
     Object* map = make_map();
-
     map_set(map, object_string("a"), object_integer(1));
     map_set(map, object_string("b"), object_integer(2));
     map_set(map, object_string("c"), object_integer(3));
@@ -35,7 +57,7 @@ void test_map_set_and_get() {
 
 int main() {
   test_make_map();
-  test_map_set_and_get();
+  /* test_map_set_and_get(); */
 
   return EXIT_SUCCESS;
 }

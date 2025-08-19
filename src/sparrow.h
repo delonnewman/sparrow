@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,6 +75,7 @@ bool is_array(Object* array);
 Object* make_map();
 void map_set(Object* map, Object* key, Object* value);
 Object* map_get_bucket(Object* map, Object* key);
+void map_set_bucket(Object* map, Object* key, Object* bucket);
 Object* map_get(Object* map, Object* key);
 Object* map_keys(Object* map);
 Object* map_values(Object* map);
