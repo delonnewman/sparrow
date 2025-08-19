@@ -44,7 +44,7 @@ Object* object_null() {
   object->float_val = 0.0;
   object->char_val = '\0';
   object->str_val = "";
-  object->count = 0;
+  object->length = 0;
 
   OBJECT_NULL = object;
 
@@ -86,7 +86,7 @@ Object* object_float(double value) {
 Object* object_string(char* value) {
   Object* object  = object_allocate();
   object->type    = TYPE_STRING;
-  object->count   = strlen(value);
+  object->length  = strlen(value);
   object->str_val = malloc(strlen(value) + 1);
   strcpy(object->str_val, value);
 
@@ -157,9 +157,9 @@ void object_copy(Object* target, Object* source) {
     strcpy(target->str_val, source->str_val);
     break;
   case TYPE_CONS:
-    target->count = source->count;
-    target->ref   = source->ref;
-    target->next  = source->next;
+    target->length = source->length;
+    target->ref    = source->ref;
+    target->next   = source->next;
     break;
   default:
     fprintf(stderr, "TypeError: unknown type '%s'", type_name(source));
@@ -178,7 +178,7 @@ Object* list_empty() {
   obj->type   = TYPE_CONS;
   obj->ref    = NULL;
   obj->next   = NULL;
-  obj->count  = 0;
+  obj->length = 0;
 
   EMPTY = obj;
 
@@ -189,10 +189,10 @@ Object* make_pair(Object* first, Object* second) {
   Object* obj = object_allocate();
   obj->type = TYPE_CONS;
 
-  obj->ref   = object_allocate();
-  obj->ref   = first;
-  obj->next  = second;
-  obj->count = -1;
+  obj->ref    = object_allocate();
+  obj->ref    = first;
+  obj->next   = second;
+  obj->length = -1;
 
   return obj;
 }
@@ -217,8 +217,8 @@ Object* list_cons(Object* value, Object* list) {
     obj->ref = value;
   }
 
-  obj->next  = list;
-  obj->count = list->count + 1;
+  obj->next   = list;
+  obj->length = list->length + 1;
 
   return obj;
 }
@@ -272,11 +272,11 @@ bool is_cons(Object* list) {
 }
 
 bool is_pair(Object* list) {
-  return (IS_TYPE(list, TYPE_CONS)) && list->count == -1;
+  return (IS_TYPE(list, TYPE_CONS)) && list->length == -1;
 }
 
 bool is_list(Object* list) {
-  return (IS_TYPE(list, TYPE_CONS)) && list->count != -1;
+  return (IS_TYPE(list, TYPE_CONS)) && list->length != -1;
 }
 
 char* type_name(Object* obj) {
@@ -343,7 +343,7 @@ Object* make_array(size_t size) {
 
   Object* array[size];
   object->array_ref = array;
-  object->count = size;
+  object->length = size;
 
   return object;
 }
@@ -354,7 +354,7 @@ void array_set(Object *array, size_t index, Object* value) {
     exit(0);
   }
 
-  if (index >= (size_t)array->count) {
+  if (index >= (size_t)array->length) {
     fprintf(stderr, "TypeError: out of bounds index for an array with a length of %ld", array->count);
     exit(0);
   }
@@ -369,7 +369,7 @@ Object* array_at(Object* array, size_t index) {
     exit(0);
   }
 
-  if (index >= (size_t)array->count) {
+  if (index >= (size_t)array->length) {
     return object_null();
   }
 
@@ -405,7 +405,7 @@ size_t collection_count(Object *col) {
     exit(0);
   }
 
-  return col->count;
+  return col->length;
 }
 
 bool is_empty(Object* list) {
@@ -540,7 +540,7 @@ long object_hash_code(Object* obj) {
   switch (obj->type) {
   case TYPE_SYMBOL:
   case TYPE_STRING:
-    return string_hash(obj->str_val, obj->count);
+    return string_hash(obj->str_val, obj->length);
   default:
     fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
     exit(0);

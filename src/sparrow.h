@@ -32,7 +32,7 @@ typedef struct Object {
   char* str_val;
 
   // collections
-  long count;
+  long length;
 
   // arrays
   struct Object** array_ref;
