@@ -1,22 +1,18 @@
 .POSIX:
 
-CC      = cc
-CFLAGS  = -std=c99 -Wall -Wextra -Wno-missing-field-initializers
-LDFLAGS =
-LDLIBS  =
-SRC     = src
-NAME    = sparrow
+CC       = cc
+CFLAGS   = -std=c99 -Wall -Wextra -Wno-missing-field-initializers
+LDFLAGS  =
+LDLIBS   =
+SRC      = src
+NAME     = sparrow
+TEST_DIR = test
 
 all: $(NAME)
 
-clean:
+clean: clean_test
 	rm -f $(NAME) $(NAME).o
-	rm -f test/list_test$(EXE)
-	rm -f test/equal_test$(EXE)
-	rm -f test/array_test$(EXE)
-	rm -f test/null_test$(EXE)
-	rm -f test/bool_test$(EXE)
-	rm -f test/object_test$(EXE)
+	rm -f lisp$(EXE)
 
 $(NAME).o:
 	$(CC) -c $(CFLAGS) -o $@ $(SRC)/$(NAME).c
@@ -24,43 +20,26 @@ $(NAME).o:
 lisp$(EXE): $(NAME).o
 	$(CC) $(CFLAGS) -o $@ $(SRC)/main.c $(NAME).o $(LDLIBS)
 
-run: $(NAME)
-	./$(NAME)$(EXE)
+run: lisp$(EXE)
+	./lisp$(EXE)
 
-test/list_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/list_test.c $(NAME).o $(LDLIBS)
+test: $(TEST_DIR)/*_test.c
+	@for file in $^; do \
+		test=`echo $$file | sed 's/^test\///' | sed 's/_test.c//'`; \
+		make run_test TEST=$$test; \
+	done
 
-test/equal_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/equal_test.c $(NAME).o $(LDLIBS)
+run_test: compile_test
+	./test/$(TEST)_test$(EXE)
 
-test/array_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/array_test.c $(NAME).o $(LDLIBS)
+compile_test: $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o ./test/$(TEST)_test$(EXE) test/$(TEST)_test.c $(NAME).o $(LDLIBS)
 
-test/null_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/null_test.c $(NAME).o $(LDLIBS)
+clean_test: $(TEST_DIR)/*_test
+ifdef TEST
+	rm -rf $(TEST)
+else
+	rm -rf $^
+endif
 
-test/bool_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/bool_test.c $(NAME).o $(LDLIBS)
-
-test/object_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/object_test.c $(NAME).o $(LDLIBS)
-
-test/map_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/map_test.c $(NAME).o $(LDLIBS)
-
-test/hash_test$(EXE): $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/hash_test.c $(NAME).o $(LDLIBS)
-
-test: test/list_test$(EXE) test/equal_test$(EXE) test/array_test$(EXE) \
-test/null_test$(EXE) test/bool_test$(EXE) test/object_test$(EXE) test/map_test$(EXE) \
-test/hash_test$(EXE)
-	./test/list_test$(EXE)
-	./test/equal_test$(EXE)
-	./test/array_test$(EXE)
-	./test/null_test$(EXE)
-	./test/bool_test$(EXE)
-	./test/object_test$(EXE)
-	./test/map_test$(EXE)
-	./test/hash_test$(EXE)
-
-.PHONY: all clean run test
+.PHONY: all clean run test run_test compile_test clean_test
