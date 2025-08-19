@@ -12,8 +12,7 @@ void test_empty() {
 }
 
 void test_cons() {
-  Object* list = list_empty();
-  list = list_cons(object_integer(1), list_cons(object_integer(2), list));
+  Object* list = list_cons(object_integer(1), list_cons(object_integer(2), list_empty()));
 
   assert(collection_count(list) == 2);
   assert(is_equal(list_first(list), object_integer(1)));
