@@ -94,7 +94,8 @@ bool is_integer(Object* obj);
 bool is_float(Object* obj);
 bool is_number(Object* obj);
 
-int string_hash(const char* string, size_t strlen);
+long object_hash_code(Object* obj);
+long string_hash(const char* string, size_t strlen);
 
 // Native to object conversions
 bool bool_to_int(Object* obj);

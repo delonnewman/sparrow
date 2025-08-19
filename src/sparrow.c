@@ -86,6 +86,7 @@ Object* object_float(double value) {
 Object* object_string(char* value) {
   Object* object  = object_allocate();
   object->type    = TYPE_STRING;
+  object->count   = strlen(value);
   object->str_val = malloc(strlen(value) + 1);
   strcpy(object->str_val, value);
 
@@ -535,7 +536,18 @@ bool is_equal(Object* object1, Object* object2) {
   return false;
 }
 
-int string_hash(const char* string, size_t strlen) {
+long object_hash_code(Object* obj) {
+  switch (obj->type) {
+  case TYPE_SYMBOL:
+  case TYPE_STRING:
+    return string_hash(obj->str_val, obj->count);
+  default:
+    fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
+    exit(0);
+  }
+}
+
+long string_hash(const char* string, size_t strlen) {
   long code = 0;
   for (size_t i = 0; i < strlen; i++) {
     for (int j = strlen; j > 0; j--) {
