@@ -210,16 +210,8 @@ Object* list_cons(Object* value, Object* list) {
   }
 
   Object* obj = object_allocate();
-  obj->type = TYPE_CONS;
-
-  obj->ref = object_allocate();
-  object_copy(obj->ref, value);
-  /* if (IS_TYPE(value, TYPE_CONS)) { */
-  /*   object_copy(obj->ref, value); */
-  /* } else { */
-    obj->ref = value;
-  /* } */
-
+  obj->type   = TYPE_CONS;
+  obj->ref    = value;
   obj->next   = list;
   obj->length = list->length + 1;
 

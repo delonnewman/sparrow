@@ -15,10 +15,13 @@ void test_empty_count() {
 
 void test_cons() {
   Object* list = list_empty();
-  list = list_cons(object_integer(1), list);
+  list = list_cons(object_integer(1), list_cons(object_integer(2), list));
 
+  assert(collection_count(list) == 2);
   assert(is_equal(list_first(list), object_integer(1)));
-  assert(collection_count(list) == 1);
+  assert(is_equal(list_first(list_next(list)), object_integer(2)));
+  assert(is_empty(list_next(list_next(list))));
+  assert(is_null(list_first(list_next(list_next(list)))));
 }
 
 void test_cons_and_null() {
