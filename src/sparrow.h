@@ -72,7 +72,7 @@ void array_print(Object* array);
 bool is_array(Object* array);
 
 Object* make_map();
-Object* map_set(Object* map, Object* key, Object* value);
+void map_set(Object* map, Object* key, Object* value);
 Object* map_get(Object* map, Object* key);
 Object* map_keys(Object* map);
 Object* map_values(Object* map);

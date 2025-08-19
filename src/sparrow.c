@@ -387,6 +387,15 @@ Object* make_map() {
   return map;
 }
 
+void map_set(Object* map, Object* key, Object* value) {
+  long key_hash = object_hash_code(key);
+  size_t index = key_hash % map->length;
+  Object* bucket = array_at(map, index);
+
+  bucket = list_cons(make_pair(key, value), bucket);
+  array_set(map, index, bucket);
+}
+
 bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
 }
