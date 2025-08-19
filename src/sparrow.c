@@ -140,6 +140,8 @@ void object_copy(Object* target, Object* source) {
   switch (source->type) {
   case TYPE_BOOL:
   case TYPE_NULL:
+  case TYPE_ARRAY:
+  case TYPE_MAP:
     target = source;
     break;
   case TYPE_INT:
@@ -211,11 +213,12 @@ Object* list_cons(Object* value, Object* list) {
   obj->type = TYPE_CONS;
 
   obj->ref = object_allocate();
-  if (IS_TYPE(value, TYPE_CONS)) {
-    object_copy(obj->ref, value);
-  } else {
+  object_copy(obj->ref, value);
+  /* if (IS_TYPE(value, TYPE_CONS)) { */
+  /*   object_copy(obj->ref, value); */
+  /* } else { */
     obj->ref = value;
-  }
+  /* } */
 
   obj->next   = list;
   obj->length = list->length + 1;
@@ -297,6 +300,10 @@ char* type_name(Object* obj) {
     return "Cons";
   case TYPE_NULL:
     return "Null";
+  case TYPE_MAP:
+    return "Map";
+  case TYPE_ARRAY:
+    return "Array";
   default:
     fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
     exit(0);
@@ -350,7 +357,7 @@ Object* make_array(size_t size) {
 
 void array_set(Object *array, size_t index, Object* value) {
   if (!is_array(array)) {
-    fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
+    fprintf(stderr, "TypeError: invalid operation on %s, 'set'", type_name(array));
     exit(0);
   }
 
@@ -365,7 +372,7 @@ void array_set(Object *array, size_t index, Object* value) {
 
 Object* array_at(Object* array, size_t index) {
   if (!is_array(array)) {
-    fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
+    fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
   }
 
@@ -377,23 +384,97 @@ Object* array_at(Object* array, size_t index) {
   return storage[index];
 }
 
+void array_print(Object* array) {
+  printf("[");
+  for (long i = 0; i < array->length; i++) {
+    print(array_at(array, i));
+    if (i < array->length - 1) {
+      printf(", ");
+    }
+  }
+  printf("]");
+}
+
+bool array_is_equal(Object* this, Object* other) {
+  if (this->length != other->length) {
+    return false;
+  }
+
+  bool result = true;
+  for (long i = 0; i < this->length; i++) {
+    result = result && is_equal(array_at(this, i), array_at(other, i));
+  }
+  return result;
+}
+
 bool is_array(Object* array) {
   return IS_TYPE(array, TYPE_ARRAY);
 }
 
+#define MAP_BUCKET_COUNT 10
+
 Object* make_map() {
-  Object* map = make_array(10);
+  Object* map = make_array(MAP_BUCKET_COUNT);
+  for (long i = 0; i < MAP_BUCKET_COUNT; i++) {
+    array_set(map, i, list_empty());
+  }
+  map->int_val = MAP_BUCKET_COUNT;
+  map->length = 0;
   map->type = TYPE_MAP;
   return map;
 }
 
 void map_set(Object* map, Object* key, Object* value) {
-  long key_hash = object_hash_code(key);
-  size_t index = key_hash % map->length;
-  Object* bucket = array_at(map, index);
+  printf("Setting map key: ");
+  print(key); printf(" => "); say(value);
 
-  bucket = list_cons(make_pair(key, value), bucket);
-  array_set(map, index, bucket);
+  long key_hash = object_hash_code(key);
+  printf("Key hash: %ld\n", key_hash);
+
+  size_t index = key_hash % map->int_val;
+  printf("Storage index: %zu\n", index);
+
+  Object* bucket = map->array_ref[index];
+  if (is_list(bucket)) {
+    printf("Bucket: ");
+    say(bucket);
+  } else {
+    printf("Bucket is not set\n");
+    bucket = list_empty();
+  }
+
+  Object* pair = make_array(2);
+  array_set(pair, 0, key);
+  array_set(pair, 1, value);
+
+  bucket = list_cons(pair, bucket);
+  map->array_ref[index] = bucket;
+
+  map->length += 1;
+}
+
+Object* map_get_bucket(Object* map, Object* key) {
+  long key_hash = object_hash_code(key);
+  size_t index = key_hash % map->int_val;
+
+  return map->array_ref[index];
+}
+
+Object* map_get(Object* map, Object* key) {
+  long key_hash = object_hash_code(key);
+  size_t index  = key_hash % map->int_val;
+  Object* bucket = map->array_ref[index];
+
+  Object* pair;
+  while (IS_TYPE(bucket, TYPE_NULL)) {
+    pair = list_first(bucket);
+    if (is_equal(array_at(pair, 0), key)) {
+      return array_at(pair, 1);
+    }
+    bucket = list_next(bucket);
+  }
+
+  return object_null();
 }
 
 bool is_map(Object* map) {
@@ -423,7 +504,7 @@ bool is_empty(Object* list) {
 
 void print(Object* obj) {
   if (IS_OBJECT(obj) == false) {
-    fprintf(stderr, "TypeError: only objects can be printed %s", type_name(obj));
+    fprintf(stderr, "TypeError: only objects can be printed\n");
     exit(0);
   }
 
@@ -432,11 +513,11 @@ void print(Object* obj) {
     printf("%ld", obj->int_val);
     break;
   case TYPE_FLOAT:
-    printf("%f", obj->float_val);
+    printf("%f:%s", obj->float_val, type_name(obj));
     break;
   case TYPE_BOOL:
-    if (is_false(obj)) printf("false");
-    else printf("true");
+    if (is_true(obj)) printf("true");
+    else printf("false");
     break;
   case TYPE_STRING:
     printf("\"%s\"", obj->str_val);
@@ -445,13 +526,17 @@ void print(Object* obj) {
     printf("\%c", obj->char_val);
     break;
   case TYPE_SYMBOL:
-    printf("%s", obj->str_val);
-    break;
-  case TYPE_CONS:
-    list_print(obj);
+    printf("'%s", obj->str_val);
     break;
   case TYPE_NULL:
     printf("null");
+    break;
+  case TYPE_ARRAY:
+    array_print(obj);
+  case TYPE_MAP:
+    break;
+  case TYPE_CONS:
+    list_print(obj);
     break;
   default:
     fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
@@ -516,6 +601,8 @@ bool is_equal(Object* object1, Object* object2) {
 
   if (object1->type == object2->type) {
     switch (object1->type) {
+      case TYPE_NULL:
+        return true;
       case TYPE_INT:
       case TYPE_BOOL:
         return object1->int_val == object2->int_val;
@@ -528,6 +615,8 @@ bool is_equal(Object* object1, Object* object2) {
         return strcmp(object1->str_val, object2->str_val) == 0;
       case TYPE_CONS:
         return list_is_equal(object1, object2);
+      case TYPE_ARRAY:
+        return array_is_equal(object1, object2);
       default:
         fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(object1));
         exit(0);
@@ -551,9 +640,15 @@ long object_hash_code(Object* obj) {
   case TYPE_STRING:
     return string_hash(obj->str_val, obj->length);
   default:
-    fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
+    fprintf(stderr, "TypeError: unknown hash code type '%s'\n", type_name(obj));
     exit(0);
   }
+}
+
+long hash_combine(long seed, long hash) {
+  // a la boost, a la clojure
+  seed ^= hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  return seed;
 }
 
 long string_hash(const char* string, size_t strlen) {
