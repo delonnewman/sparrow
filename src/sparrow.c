@@ -199,6 +199,22 @@ Object* make_pair(Object* first, Object* second) {
   return obj;
 }
 
+Object* pair_key(Object* pair) {
+  if (!is_pair(pair)) {
+    fprintf(stderr, "TypeError: invalid operation on %s, 'key'", type_name(pair));
+    exit(0);
+  }
+  return pair->ref;
+}
+
+Object* pair_value(Object* pair) {
+  if (!is_pair(pair)) {
+    fprintf(stderr, "TypeError: invalid operation on %s, 'value'", type_name(pair));
+    exit(0);
+  }
+  return pair->next;
+}
+
 Object* list_cons(Object* value, Object* list) {
   if (IS_TYPE(list, TYPE_NULL)) {
     list = list_empty();

@@ -57,14 +57,17 @@ Object* object_true();
 Object* object_false();
 
 Object* list_empty();
-Object* make_pair(Object* first, Object* second);
 Object* list_cons(Object* value, Object* list);
 Object* list_first(Object* list);
 Object* list_next(Object* list);
 void list_print(Object* list);
 bool is_cons(Object* cons);
-bool is_pair(Object* cons);
 bool is_list(Object* cons);
+
+Object* make_pair(Object* first, Object* second);
+Object* pair_key(Object* pair);
+Object* pair_value(Object* pair);
+bool is_pair(Object* cons);
 
 Object* make_array(size_t size);
 Object* array_at(Object* array, size_t index);
