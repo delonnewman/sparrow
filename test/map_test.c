@@ -2,7 +2,7 @@
 #include <assert.h>
 
 void test_make_map() {
-    assert(1);
+    assert(is_map(make_map()));
 }
 
 int main() {

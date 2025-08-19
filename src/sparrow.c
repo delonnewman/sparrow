@@ -380,6 +380,16 @@ bool is_array(Object* array) {
   return IS_TYPE(array, TYPE_ARRAY);
 }
 
+Object* make_map() {
+  Object* map = make_array(10);
+  map->type = TYPE_MAP;
+  return map;
+}
+
+bool is_map(Object* map) {
+  return IS_TYPE(map, TYPE_MAP);
+}
+
 bool is_collection(Object* obj) {
   return is_array(obj) || is_list(obj);
 }
