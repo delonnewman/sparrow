@@ -45,13 +45,17 @@ test/bool_test$(EXE): $(NAME).o
 test/object_test$(EXE): $(NAME).o
 	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/object_test.c $(NAME).o $(LDLIBS)
 
+test/map_test$(EXE): $(NAME).o
+	$(CC) $(CFLAGS) -I$(SRC) -o $@ test/map_test.c $(NAME).o $(LDLIBS)
+
 test: test/list_test$(EXE) test/equal_test$(EXE) test/array_test$(EXE) \
-test/null_test$(EXE) test/bool_test$(EXE) test/object_test$(EXE)
+test/null_test$(EXE) test/bool_test$(EXE) test/object_test$(EXE) test/map_test$(EXE)
 	./test/list_test$(EXE)
 	./test/equal_test$(EXE)
 	./test/array_test$(EXE)
 	./test/null_test$(EXE)
 	./test/bool_test$(EXE)
 	./test/object_test$(EXE)
+	./test/map_test$(EXE)
 
 .PHONY: all clean run test
