@@ -524,3 +524,13 @@ bool is_equal(Object* object1, Object* object2) {
 
   return false;
 }
+
+int string_hash(const char* string, size_t strlen) {
+  int code = 0;
+  for (int i = 0; i < strlen; i++) {
+    for (int j = strlen; j > 0; j--) {
+      code += powl(string[i], j);
+    }
+  }
+  return code;
+}

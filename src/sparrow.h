@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define IS_OBJECT(O) (O != NULL && O->sp_obj == true)
 #define TYPE_TAG_IS(O, T) (O->type == T)
@@ -84,6 +85,8 @@ bool is_bool(Object* obj);
 bool is_integer(Object* obj);
 bool is_float(Object* obj);
 bool is_number(Object* obj);
+
+int string_hash(const char* string, size_t strlen);
 
 // Native to object conversions
 bool bool_to_int(Object* obj);
