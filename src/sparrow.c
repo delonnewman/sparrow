@@ -355,7 +355,7 @@ void array_set(Object *array, size_t index, Object* value) {
   }
 
   if (index >= (size_t)array->length) {
-    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %ld", array->count);
+    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %ld", array->length);
     exit(0);
   }
 
