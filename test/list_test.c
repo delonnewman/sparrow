@@ -4,13 +4,11 @@
 void test_empty() {
   Object* list = list_empty();
 
+  assert(is_list(list));
   assert(is_empty(list));
-}
-
-void test_empty_count() {
-  Object* list = list_empty();
-
   assert(collection_count(list) == 0);
+  assert(is_null(list_first(list)));
+  assert(is_null(list_next(list)));
 }
 
 void test_cons() {
@@ -34,18 +32,6 @@ void test_cons_and_null() {
   assert(collection_count(list) == 1);
 }
 
-void test_first() {
-  Object* empty = list_empty();
-
-  assert(is_null(list_first(empty)));
-}
-
-void test_next() {
-  Object* empty = list_empty();
-
-  assert(is_null(list_next(empty)));
-}
-
 void test_is_list() {
   Object* list = list_empty();
 
@@ -67,10 +53,7 @@ void test_list_null_safe_predicates() {
 
 int main() {
   test_empty();
-  test_empty_count();
   test_cons();
-  test_first();
-  test_next();
   test_cons_and_null();
   test_list_null_safe_predicates();
   test_is_list();
