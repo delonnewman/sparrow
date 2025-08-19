@@ -189,9 +189,9 @@ Object* pair_cons(Object* first, Object* second) {
   obj->type = TYPE_CONS;
 
   obj->ref   = object_allocate();
-  obj->count = -1;
   obj->ref   = first;
   obj->next  = second;
+  obj->count = -1;
 
   return obj;
 }
