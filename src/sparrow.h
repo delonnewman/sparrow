@@ -71,6 +71,13 @@ void array_set(Object* array, size_t index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 
+Object* make_map();
+Object* map_set(Object* map, Object* key, Object* value);
+Object* map_get(Object* map, Object* key);
+Object* map_keys(Object* map);
+Object* map_values(Object* map);
+Object* map_entries(Object* map);
+
 size_t collection_count(Object* list);
 bool is_collection(Object* list);
 
