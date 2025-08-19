@@ -27,7 +27,6 @@ void test_cons_and_null() {
 
   assert(is_null(obj));
   assert(!is_null(list_next(list)));
-
   assert(is_equal(list_first(list), object_integer(1)));
   assert(collection_count(list) == 1);
 }

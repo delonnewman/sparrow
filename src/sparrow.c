@@ -68,8 +68,8 @@ Object* object_integer(long value) {
 }
 
 Object* object_char(char value) {
-  Object* object  = object_allocate();
-  object->type    = TYPE_CHAR;
+  Object* object   = object_allocate();
+  object->type     = TYPE_CHAR;
   object->char_val = value;
 
   return object;
@@ -134,15 +134,13 @@ Object* object_false() {
 }
 
 void object_copy(Object* target, Object* source) {
-  // singleton objects are a special case
-  if ((IS_TYPE(source, TYPE_BOOL)) || (IS_TYPE(source, TYPE_NULL))) {
-    target = source;
-    return;
-  }
-
   target->type = source->type;
 
   switch (source->type) {
+  case TYPE_BOOL:
+  case TYPE_NULL:
+    target = source;
+    break;
   case TYPE_INT:
     target->int_val = source->int_val;
     break;
@@ -190,10 +188,10 @@ Object* pair_cons(Object* first, Object* second) {
   Object* obj = object_allocate();
   obj->type = TYPE_CONS;
 
-  obj->ref = object_allocate();
+  obj->ref   = object_allocate();
   obj->count = -1;
-  object_copy(obj->ref, first);
-  /* object_copy(obj->next, second); */
+  obj->ref   = first;
+  obj->next  = second;
 
   return obj;
 }
@@ -212,7 +210,11 @@ Object* list_cons(Object* value, Object* list) {
   obj->type = TYPE_CONS;
 
   obj->ref = object_allocate();
-  object_copy(obj->ref, value);
+  if (IS_TYPE(value, TYPE_CONS)) {
+    object_copy(obj->ref, value);
+  } else {
+    obj->ref = value;
+  }
 
   obj->next  = list;
   obj->count = list->count + 1;
