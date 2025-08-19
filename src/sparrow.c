@@ -184,7 +184,7 @@ Object* list_empty() {
   return obj;
 }
 
-Object* pair_cons(Object* first, Object* second) {
+Object* make_pair(Object* first, Object* second) {
   Object* obj = object_allocate();
   obj->type = TYPE_CONS;
 

@@ -55,7 +55,7 @@ Object* object_true();
 Object* object_false();
 
 Object* list_empty();
-Object* pair_cons(Object* first, Object* second);
+Object* make_pair(Object* first, Object* second);
 Object* list_cons(Object* value, Object* list);
 Object* list_first(Object* list);
 Object* list_next(Object* list);

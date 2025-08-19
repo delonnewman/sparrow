@@ -50,8 +50,8 @@ void test_is_list() {
   assert(is_cons(list));
 }
 
-void test_is_cons() {
-  Object* pair = pair_cons(object_integer(1), object_integer(2));
+void test_make_pair() {
+  Object* pair = make_pair(object_integer(1), object_integer(2));
 
   assert(is_pair(pair));
   assert(is_cons(pair));
@@ -71,7 +71,7 @@ int main() {
   test_cons_and_null();
   test_list_null_safe_predicates();
   test_is_list();
-  test_is_cons();
+  test_make_pair();
 
   return EXIT_SUCCESS;
 }
