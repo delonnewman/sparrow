@@ -10,9 +10,10 @@ TEST_DIR = test
 
 all: $(NAME)
 
-clean: clean_test
+clean:
 	rm -f $(NAME) $(NAME).o
 	rm -f lisp$(EXE)
+	rm -f $$(ls test/*_test)
 
 $(NAME).o:
 	$(CC) -c $(CFLAGS) -o $@ $(SRC)/$(NAME).c
