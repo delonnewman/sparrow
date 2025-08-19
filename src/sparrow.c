@@ -347,14 +347,14 @@ Object* make_array(size_t size) {
   return object;
 }
 
-void array_set(Object *array, int index, Object* value) {
+void array_set(Object *array, size_t index, Object* value) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
   }
 
-  if (index >= array->count) {
-    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %d", array->count);
+  if (index >= (size_t)array->count) {
+    fprintf(stderr, "TypeError: out of bounds index for an array with a length of %ld", array->count);
     exit(0);
   }
 
@@ -362,13 +362,13 @@ void array_set(Object *array, int index, Object* value) {
   storage[index] = value;
 }
 
-Object* array_at(Object* array, int index) {
+Object* array_at(Object* array, size_t index) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operatoin on %s, 'at'", type_name(array));
     exit(0);
   }
 
-  if (index >= array->count) {
+  if (index >= (size_t)array->count) {
     return object_null();
   }
 
@@ -526,8 +526,8 @@ bool is_equal(Object* object1, Object* object2) {
 }
 
 int string_hash(const char* string, size_t strlen) {
-  int code = 0;
-  for (int i = 0; i < strlen; i++) {
+  long code = 0;
+  for (size_t i = 0; i < strlen; i++) {
     for (int j = strlen; j > 0; j--) {
       code += powl(string[i], j);
     }
