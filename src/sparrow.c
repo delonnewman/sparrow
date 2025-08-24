@@ -638,15 +638,17 @@ Bool is_equal(Object* object1, Object* object2) {
       case TYPE_NULL:
         return true;
       case TYPE_INT:
+        printf("is_equal(%ld, %ld)\n", INT(object1), INT(object2));
+        return INT(object1) == INT(object2);
       case TYPE_BOOL:
-        return *((Bool*)object1->ref) == *((Bool*)object2->ref);
+        return BOOL(object1) == BOOL(object2);
       case TYPE_FLOAT:
-        return *((Float*)object1->ref) == *((Float*)object2->ref);
+        return FLOAT(object1) == FLOAT(object2);
       case TYPE_CHAR:
-        return *((Char*)object1->ref) == *((Char*)object2->ref);
+        return CHAR(object1) == CHAR(object2);
       case TYPE_STRING:
       case TYPE_SYMBOL:
-        return strcmp((Str)object1->ref, (Str)object2->ref) == 0;
+        return strcmp(STR(object1), STR(object2)) == 0;
       case TYPE_CONS:
         return list_is_equal(object1, object2);
       case TYPE_ARRAY:

@@ -11,6 +11,12 @@
 #define TYPE_TAG_IS(O, T) (O->type == T)
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
+#define INT(O) *((Int*)O->ref)
+#define FLOAT(O) *((Float*)O->ref)
+#define BOOL(O) *((Bool*)O->ref)
+#define CHAR(O) *((Char*)O->ref)
+#define STR(O) ((Str)O->ref)
+
 typedef long Int;
 typedef size_t Nat;
 typedef double Float;
