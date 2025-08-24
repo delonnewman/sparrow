@@ -6,7 +6,7 @@ void test_empty() {
 
   assert(is_list(list));
   assert(is_empty(list));
-  assert(collection_count(list) == 0);
+  assert(length(list) == 0);
   assert(is_null(list_first(list)));
   assert(is_null(list_next(list)));
 }
@@ -14,7 +14,7 @@ void test_empty() {
 void test_cons() {
   Object* list = list_cons(object_integer(1), list_cons(object_integer(2), list_empty()));
 
-  assert(collection_count(list) == 2);
+  assert(length(list) == 2);
   assert(is_equal(list_first(list), object_integer(1)));
   assert(is_equal(list_first(list_next(list)), object_integer(2)));
   assert(is_empty(list_next(list_next(list))));
@@ -28,7 +28,7 @@ void test_cons_and_null() {
   assert(is_null(obj));
   assert(!is_null(list_next(list)));
   assert(is_equal(list_first(list), object_integer(1)));
-  assert(collection_count(list) == 1);
+  assert(length(list) == 1);
 }
 
 void test_is_list() {
