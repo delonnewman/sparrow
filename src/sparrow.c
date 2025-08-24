@@ -182,24 +182,6 @@ void object_copy(Object* target, Object* source) {
   }
 }
 
-Object* EMPTY = NULL;
-
-Object* list_empty() {
-  if (EMPTY != NULL) {
-    return EMPTY;
-  }
-
-  Object* obj = object_allocate();
-  obj->type   = TYPE_CONS;
-  obj->ref    = NULL;
-  obj->next   = NULL;
-  obj->length = 0;
-
-  EMPTY = obj;
-
-  return obj;
-}
-
 Object* make_pair(Object* first, Object* second) {
   Object* obj = object_allocate();
   obj->type   = TYPE_CONS;
@@ -224,6 +206,24 @@ Object* pair_value(Object* pair) {
     exit(0);
   }
   return pair->next;
+}
+
+Object* EMPTY = NULL;
+
+Object* list_empty() {
+  if (EMPTY != NULL) {
+    return EMPTY;
+  }
+
+  Object* obj = object_allocate();
+  obj->type   = TYPE_CONS;
+  obj->ref    = NULL;
+  obj->next   = NULL;
+  obj->length = 0;
+
+  EMPTY = obj;
+
+  return obj;
 }
 
 Object* list_cons(Object* value, Object* list) {
@@ -251,7 +251,7 @@ Object* list_first(Object* list) {
     exit(0);
   }
 
-  Object* value = list->ref;
+  Object* value = (Object*)list->ref;
   if (value == NULL) {
     return object_null();
   }
@@ -279,11 +279,12 @@ void list_print(Object* list) {
   Object* current = list;
 
   while (!is_empty(current)) {
-    print(current->ref);
-    if (!is_empty(current->next)) {
+    print(list_first(current));
+    Object* next = list_next(current);
+    if (!is_empty(next)) {
       putchar(' ');
     }
-    current = current->next;
+    current = next;
   }
   
   putchar(')');
@@ -539,10 +540,10 @@ void print(Object* obj) {
 
   switch(obj->type) {
   case TYPE_INT:
-    printf("%ld", *((Int*)obj->ref));
+    printf("%ld", INT(obj));
     break;
   case TYPE_FLOAT:
-    printf("%f:%s", *((Float*)obj->ref), type_name(obj));
+    printf("%f", FLOAT(obj));
     break;
   case TYPE_BOOL:
     if (is_true(obj)) {
@@ -552,13 +553,13 @@ void print(Object* obj) {
     }
     break;
   case TYPE_STRING:
-    printf("\"%s\"", (Str)obj->ref);
+    printf("\"%s\"", STR(obj));
     break;
   case TYPE_CHAR:
-    printf("\%c", *((Char*)obj->ref));
+    printf("\%c", CHAR(obj));
     break;
   case TYPE_SYMBOL:
-    printf("'%s", (Str)obj->ref);
+    printf("'%s", STR(obj));
     break;
   case TYPE_NULL:
     printf("null");
@@ -586,9 +587,9 @@ Bool is_zero(Object* number) {
 
   switch(number->type) {
     case TYPE_INT:
-      return *((Int*)number->ref) == 0;
+      return INT(number) == 0;
     case TYPE_FLOAT:
-      return *((Float*)number->ref) == 0.0;
+      return FLOAT(number) == 0.0;
     default:
       fprintf(stderr, "TypeError: zero? only works on numeric types");
       exit(0);
