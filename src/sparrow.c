@@ -660,10 +660,10 @@ Bool is_equal(Object* object1, Object* object2) {
   }
   else if (is_number(object1) && is_number(object2)) {
     if (is_integer(object1)) {
-      return *((Int*)object1->ref) == *((Float*)object2->ref);
+      return INT(object1) == FLOAT(object2);
     }
     if (is_float(object1)) {
-      return *((Float*)object1->ref) == *((Int*)object2->ref);
+      return FLOAT(object1) == INT(object2);
     }
   }
 
@@ -674,7 +674,7 @@ Int object_hash_code(Object* obj) {
   switch (obj->type) {
   case TYPE_SYMBOL:
   case TYPE_STRING:
-    return string_hash((Str)obj->ref, obj->length);
+    return string_hash(STR(obj), obj->length);
   default:
     fprintf(stderr, "TypeError: unknown hash code type '%s'\n", type_name(obj));
     exit(0);
