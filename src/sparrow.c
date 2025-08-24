@@ -1,8 +1,16 @@
 #include "sparrow.h"
 
 Object* object_allocate() {
-  Object* object = malloc(sizeof(Object));
-  object->sp_obj = true;
+  Object* object    = malloc(sizeof(Object));
+  object->sp_obj    = true;
+  object->type      = TYPE_NULL;
+  object->int_val   = -1;
+  object->float_val = -1.1;
+  object->length    = -1;
+  object->str_val   = NULL;
+  object->array_ref = NULL;
+  object->ref       = NULL;
+  object->next      = NULL;
   return object;
 }
 
@@ -436,14 +444,18 @@ void map_set(Object* map, Object* key, Object* value) {
   printf("Setting map key: ");
   print(key); printf(" => "); say(value);
 
-  Object* bucket = map_get_bucket(map, key);
+  long key_hash = object_hash_code(key);
+  printf("Key hash: %ld\n", key_hash);
+
+  size_t index = key_hash % map->int_val;
+  printf("Storage index: %zu\n", index);
+
+  Object* bucket = map->array_ref[index];
+  assert(is_list(bucket));
   printf("Bucket: ");
   say(bucket);
 
-  Object* pair = make_array(2);
-  array_set(pair, 0, key);
-  array_set(pair, 1, value);
-
+  Object* pair = make_pair(key, value);
   map_set_bucket(map, key, list_cons(pair, bucket));
   map->length += 1;
 }
@@ -475,8 +487,8 @@ Object* map_get(Object* map, Object* key) {
   Object* pair;
   while (IS_TYPE(bucket, TYPE_NULL)) {
     pair = list_first(bucket);
-    if (is_equal(array_at(pair, 0), key)) {
-      return array_at(pair, 1);
+    if (is_equal(pair_key(pair), key)) {
+      return pair_value(pair);
     }
     bucket = list_next(bucket);
   }
