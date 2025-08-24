@@ -144,8 +144,6 @@ void object_copy(Object* target, Object* source) {
   Char char_copy;
   Str str_data;
 
-  Ref ref = source->ref;
-
   target->type = source->type;
 
   switch (source->type) {
@@ -156,20 +154,20 @@ void object_copy(Object* target, Object* source) {
     target = source;
     break;
   case TYPE_INT:
-    int_copy = *((Int*)ref);
+    int_copy = INT(source);
     target->ref = &int_copy;
     break;
   case TYPE_FLOAT:
-    float_copy = *((Float*)ref);
+    float_copy = FLOAT(source);
     target->ref = &float_copy;
     break;
   case TYPE_CHAR:
-    char_copy = *((Char*)ref);
+    char_copy = CHAR(source);
     target->ref = &char_copy;
     break;
   case TYPE_STRING:
   case TYPE_SYMBOL:
-    str_data = (Str)ref;
+    str_data = STR(source);
     target->ref = malloc(strlen(str_data) + 1);
     strcpy(target->ref, str_data);
     break;
