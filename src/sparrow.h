@@ -82,8 +82,9 @@ Object* map_values(Object* map);
 Object* map_entries(Object* map);
 Bool is_map(Object* map);
 
-Nat collection_count(Object* list);
-Bool is_collection(Object* list);
+Nat length(Object* list);
+Bool is_coll(Object* list);
+Bool is_countable(Object* obj);
 
 Bool is_object(Object* obj);
 Bool is_null(Object* obj);

@@ -512,15 +512,15 @@ Bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
 }
 
-Bool is_collection(Object* obj) {
+Bool is_coll(Object* obj) {
   return is_array(obj) || is_list(obj);
 }
 
 Bool is_countable(Object* obj) {
-  return is_null(obj) || is_collection(obj);
+  return is_null(obj) || is_coll(obj);
 }
 
-Nat collection_count(Object *col) {
+Nat length(Object *col) {
   if (!is_countable(col)) {
     fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(col));
     exit(0);
@@ -530,7 +530,7 @@ Nat collection_count(Object *col) {
 }
 
 Bool is_empty(Object* list) {
-  return collection_count(list) == 0;
+  return length(list) == 0;
 }
 
 void print(Object* obj) {
