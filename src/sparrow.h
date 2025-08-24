@@ -12,10 +12,11 @@
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
 typedef long Int;
+typedef size_t Nat;
 typedef double Float;
 typedef char* Str;
 typedef char Char;
-typedef short int Bool;
+typedef bool Bool;
 typedef void* Ref;
 
 typedef enum ObjectType {
@@ -44,11 +45,11 @@ void object_destroy(Object* object);
 void object_copy(Object* target, Object* source);
 
 Object* object_null();
-Object* object_integer(long value);
-Object* object_char(char value);
-Object* object_float(double value);
-Object* object_string(char* value);
-Object* object_symbol(char* value);
+Object* object_integer(Int value);
+Object* object_char(Char value);
+Object* object_float(Float value);
+Object* object_string(Str value);
+Object* object_symbol(Str value);
 Object* object_true();
 Object* object_false();
 
@@ -65,9 +66,9 @@ Object* pair_key(Object* pair);
 Object* pair_value(Object* pair);
 bool is_pair(Object* cons);
 
-Object* make_array(size_t size);
-Object* array_at(Object* array, size_t index);
-void array_set(Object* array, size_t index, Object* value);
+Object* make_array(Nat size);
+Object* array_at(Object* array, Nat index);
+void array_set(Object* array, Nat index, Object* value);
 void array_print(Object* array);
 bool is_array(Object* array);
 
@@ -79,30 +80,30 @@ Object* map_get(Object* map, Object* key);
 Object* map_keys(Object* map);
 Object* map_values(Object* map);
 Object* map_entries(Object* map);
-bool is_map(Object* map);
+Bool is_map(Object* map);
 
-size_t collection_count(Object* list);
-bool is_collection(Object* list);
+Nat collection_count(Object* list);
+Bool is_collection(Object* list);
 
-bool is_object(Object* obj);
-bool is_null(Object* obj);
-bool is_equal(Object* obj1, Object* obj2);
-bool is_zero(Object* obj);
-bool is_empty(Object* list);
-bool is_false(Object* obj);
-bool is_true(Object* obj);
-bool is_bool(Object* obj);
-bool is_integer(Object* obj);
-bool is_float(Object* obj);
-bool is_number(Object* obj);
+Bool is_object(Object* obj);
+Bool is_null(Object* obj);
+Bool is_equal(Object* obj1, Object* obj2);
+Bool is_zero(Object* obj);
+Bool is_empty(Object* list);
+Bool is_false(Object* obj);
+Bool is_true(Object* obj);
+Bool is_bool(Object* obj);
+Bool is_integer(Object* obj);
+Bool is_float(Object* obj);
+Bool is_number(Object* obj);
 
-long object_hash_code(Object* obj);
-long string_hash(const char* string, size_t strlen);
+Int object_hash_code(Object* obj);
+Int string_hash(const Str string, Nat strlen);
 
 // Native to object conversions
-bool bool_to_int(Object* obj);
-Object* int_to_bool(bool);
+Bool bool_to_int(Object* obj);
+Object* int_to_bool(Bool);
 
-char* type_name(Object* obj);
+Str type_name(Object* obj);
 void print(Object* obj);
 void say(Object* obj);

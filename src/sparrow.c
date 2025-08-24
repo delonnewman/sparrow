@@ -291,19 +291,19 @@ void list_print(Object* list) {
   putchar(')');
 }
 
-bool is_cons(Object* list) {
+Bool is_cons(Object* list) {
   return IS_TYPE(list, TYPE_CONS);
 }
 
-bool is_pair(Object* list) {
+Bool is_pair(Object* list) {
   return (IS_TYPE(list, TYPE_CONS)) && list->length == -1;
 }
 
-bool is_list(Object* list) {
+Bool is_list(Object* list) {
   return (IS_TYPE(list, TYPE_CONS)) && list->length != -1;
 }
 
-char* type_name(Object* obj) {
+Str type_name(Object* obj) {
   switch (obj->type) {
   case TYPE_INT:
     return "Num[Int]";
@@ -331,20 +331,20 @@ char* type_name(Object* obj) {
   }
 }
 
-bool is_bool(Object *obj) {
+Bool is_bool(Object *obj) {
   return IS_TYPE(obj, TYPE_BOOL);
 }
 
-bool is_false(Object *obj) {
+Bool is_false(Object *obj) {
   return IS_OBJECT(obj) &&
     (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && obj->ref == &False));
 }
 
-bool is_true(Object *obj) {
+Bool is_true(Object *obj) {
   return IS_TYPE(obj, TYPE_BOOL) && obj->ref == &True;
 }
 
-bool bool_to_int(Object* obj) {
+Bool bool_to_int(Object* obj) {
   if (!is_bool(obj)) {
     fprintf(stderr, "TypeError: invalid operation on %s", type_name(obj));
     exit(0);
@@ -357,7 +357,7 @@ bool bool_to_int(Object* obj) {
   return 0;
 }
 
-Object* int_to_bool(bool value) {
+Object* int_to_bool(Bool value) {
   if (value) {
     return object_true();
   }
@@ -369,7 +369,7 @@ void object_dump(Object* obj) {
   fprintf(stderr, "#<%s>\n", type_name(obj));
 }
 
-Object* make_array(size_t size) {
+Object* make_array(Nat size) {
   Object* object  = object_allocate();
   object->type    = TYPE_ARRAY;
 
@@ -380,7 +380,7 @@ Object* make_array(size_t size) {
   return object;
 }
 
-void array_set(Object *array, size_t index, Object* value) {
+void array_set(Object *array, Nat index, Object* value) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operation on %s, 'set'", type_name(array));
     exit(0);
@@ -395,7 +395,7 @@ void array_set(Object *array, size_t index, Object* value) {
   storage[index] = value;
 }
 
-Object* array_at(Object* array, size_t index) {
+Object* array_at(Object* array, Nat index) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
@@ -420,7 +420,7 @@ void array_print(Object* array) {
   printf("]");
 }
 
-bool array_is_equal(Object* this, Object* other) {
+Bool array_is_equal(Object* this, Object* other) {
   if (this->length != other->length) {
     return false;
   }
@@ -432,7 +432,7 @@ bool array_is_equal(Object* this, Object* other) {
   return result;
 }
 
-bool is_array(Object* array) {
+Bool is_array(Object* array) {
   return IS_TYPE(array, TYPE_ARRAY);
 }
 
@@ -508,19 +508,19 @@ Object* map_get(Object* map, Object* key) {
   return object_null();
 }
 
-bool is_map(Object* map) {
+Bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
 }
 
-bool is_collection(Object* obj) {
+Bool is_collection(Object* obj) {
   return is_array(obj) || is_list(obj);
 }
 
-bool is_countable(Object* obj) {
+Bool is_countable(Object* obj) {
   return is_null(obj) || is_collection(obj);
 }
 
-size_t collection_count(Object *col) {
+Nat collection_count(Object *col) {
   if (!is_countable(col)) {
     fprintf(stderr, "TypeError: cannot get the count of a %s", type_name(col));
     exit(0);
@@ -529,7 +529,7 @@ size_t collection_count(Object *col) {
   return col->length;
 }
 
-bool is_empty(Object* list) {
+Bool is_empty(Object* list) {
   return collection_count(list) == 0;
 }
 
@@ -583,7 +583,7 @@ void say(Object* obj) {
   printf("\n");
 }
 
-bool is_zero(Object* number) {
+Bool is_zero(Object* number) {
   if (number == NULL) return false;
 
   switch(number->type) {
@@ -597,19 +597,19 @@ bool is_zero(Object* number) {
   }
 }
 
-bool is_integer(Object* obj) {
+Bool is_integer(Object* obj) {
   return IS_TYPE(obj, TYPE_INT);
 }
 
-bool is_float(Object* obj) {
+Bool is_float(Object* obj) {
   return IS_TYPE(obj, TYPE_FLOAT);
 }
 
-bool is_number(Object* obj) {
+Bool is_number(Object* obj) {
   return (IS_TYPE(obj, TYPE_INT)) || (IS_TYPE(obj, TYPE_FLOAT));
 }
 
-bool list_is_equal(Object* list1, Object* list2) {
+Bool list_is_equal(Object* list1, Object* list2) {
   bool empty1 = is_empty(list1);
   bool empty2 = is_empty(list2);
   if (empty1 && empty2) return true;
@@ -627,7 +627,7 @@ bool list_is_equal(Object* list1, Object* list2) {
   return true;
 }
 
-bool is_equal(Object* object1, Object* object2) {
+Bool is_equal(Object* object1, Object* object2) {
   if (IS_OBJECT(object1) == false || IS_OBJECT(object2) == false) {
     fprintf(stderr, "TypeError: only objects support equality\n");
     exit(0);
@@ -668,7 +668,7 @@ bool is_equal(Object* object1, Object* object2) {
   return false;
 }
 
-long object_hash_code(Object* obj) {
+Int object_hash_code(Object* obj) {
   switch (obj->type) {
   case TYPE_SYMBOL:
   case TYPE_STRING:
@@ -679,13 +679,13 @@ long object_hash_code(Object* obj) {
   }
 }
 
-long hash_combine(long seed, long hash) {
+Int hash_combine(long seed, long hash) {
   // a la boost, a la clojure
   seed ^= hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   return seed;
 }
 
-long string_hash(const char* string, size_t strlen) {
+Int string_hash(const Str string, size_t strlen) {
   long code = 0;
   for (size_t i = 0; i < strlen; i++) {
     for (int j = strlen; j > 0; j--) {
