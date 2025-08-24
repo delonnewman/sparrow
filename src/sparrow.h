@@ -1,15 +1,25 @@
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
 
-#define IS_OBJECT(O) (O != NULL && O->sp_obj == true)
+#define IS_OBJECT(O) (O != NULL)
 #define TYPE_TAG_IS(O, T) (O->type == T)
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
-enum {
+typedef long Int;
+typedef double Float;
+typedef char* Str;
+typedef char Char;
+typedef short int Bool;
+typedef void* Ref;
+
+typedef enum ObjectType {
+  TYPE_VOID,
   TYPE_NULL,
   TYPE_INT,
   TYPE_FLOAT,
@@ -20,26 +30,12 @@ enum {
   TYPE_CONS,
   TYPE_ARRAY,
   TYPE_MAP,
-};
+} ObjectType;
 
 typedef struct Object {
-  bool sp_obj;
-  int type;
-  long int_val;
-  double float_val;
-  char char_val;
-
-  // strings, symbols
-  char* str_val;
-
-  // collections
-  long length;
-
-  // arrays
-  struct Object** array_ref;
-
-  // dynamic objects and lists
-  struct Object* ref;
+  ObjectType type;
+  Int length;
+  void* ref;
   struct Object* next;
 } Object;
 

@@ -1,20 +1,16 @@
 #include "sparrow.h"
 
 Object* object_allocate() {
-  Object* object    = malloc(sizeof(Object));
-  object->sp_obj    = true;
-  object->type      = TYPE_NULL;
-  object->int_val   = -1;
-  object->float_val = -1.1;
-  object->length    = -1;
-  object->str_val   = NULL;
-  object->array_ref = NULL;
-  object->ref       = NULL;
-  object->next      = NULL;
+  Object* object = malloc(sizeof(Object));
+  object->type   = TYPE_VOID;
+  object->ref    = NULL;
+  object->next   = NULL;
+  object->length = -1;
   return object;
 }
 
 void object_destroy(Object *object) {
+  object->ref = NULL;
   switch(object->type) {
   case TYPE_BOOL:
   case TYPE_NULL:
@@ -27,7 +23,6 @@ void object_destroy(Object *object) {
   case TYPE_STRING:
   case TYPE_SYMBOL:
     free(object);
-    free(object->str_val);
     break;
   case TYPE_CONS:
     free(object);
@@ -48,11 +43,8 @@ Object* object_null() {
 
   Object* object  = object_allocate();
   object->type    = TYPE_NULL;
-  object->int_val = 0;
-  object->float_val = 0.0;
-  object->char_val = '\0';
-  object->str_val = "";
-  object->length = 0;
+  object->ref     = NULL;
+  object->length  = 0;
 
   OBJECT_NULL = object;
 
@@ -67,50 +59,53 @@ bool is_null(Object* obj) {
   return IS_TYPE(obj, TYPE_NULL);
 }
 
-Object* object_integer(long value) {
-  Object* object  = object_allocate();
-  object->type    = TYPE_INT;
-  object->int_val = value;
+Object* object_integer(Int value) {
+  Object* object = object_allocate();
+  object->type   = TYPE_INT;
+  object->ref    = &value;
 
   return object;
 }
 
-Object* object_char(char value) {
-  Object* object   = object_allocate();
-  object->type     = TYPE_CHAR;
-  object->char_val = value;
+Object* object_char(Char value) {
+  Object* object = object_allocate();
+  object->type   = TYPE_CHAR;
+  object->ref    = &value;
 
   return object;
 }
 
-Object* object_float(double value) {
-  Object* object    = object_allocate();
-  object->type      = TYPE_FLOAT;
-  object->float_val = value;
+Object* object_float(Float value) {
+  Object* object = object_allocate();
+  object->type   = TYPE_FLOAT;
+  object->ref    = &value;
 
   return object;
 }
 
-Object* object_string(char* value) {
+Object* object_string(Str value) {
   Object* object  = object_allocate();
   object->type    = TYPE_STRING;
   object->length  = strlen(value);
-  object->str_val = malloc(strlen(value) + 1);
-  strcpy(object->str_val, value);
+  object->ref     = malloc(strlen(value) + 1);
+
+  strcpy(object->ref, value);
 
   return object;
 }
 
-Object* object_symbol(char* value) {
-  Object* object  = object_allocate();
-  object->type    = TYPE_SYMBOL;
-  object->str_val = malloc(strlen(value) + 1);
-  strcpy(object->str_val, value);
+Object* object_symbol(Str value) {
+  Object* object = object_allocate();
+  object->type   = TYPE_SYMBOL;
+  object->ref    = malloc(strlen(value) + 1);
+
+  strcpy(object->ref, value);
 
   return object;
 }
 
 Object* BOOL_TRUE = NULL;
+Bool True = 1;
 
 Object* object_true() {
   if (BOOL_TRUE != NULL) {
@@ -119,7 +114,7 @@ Object* object_true() {
 
   Object* object  = object_allocate();
   object->type    = TYPE_BOOL;
-  object->int_val = 1;
+  object->ref     = &True;
 
   BOOL_TRUE = object;
 
@@ -127,6 +122,7 @@ Object* object_true() {
 }
 
 Object* BOOL_FALSE = NULL;
+Bool False = 0;
 
 Object* object_false() {
   if (BOOL_FALSE != NULL) {
@@ -135,7 +131,7 @@ Object* object_false() {
 
   Object* object  = object_allocate();
   object->type    = TYPE_BOOL;
-  object->int_val = 0;
+  object->ref     = &False;
 
   BOOL_FALSE = object;
 
@@ -143,6 +139,13 @@ Object* object_false() {
 }
 
 void object_copy(Object* target, Object* source) {
+  Float float_copy;
+  Int int_copy;
+  Char char_copy;
+  Str str_data;
+
+  Ref ref = source->ref;
+
   target->type = source->type;
 
   switch (source->type) {
@@ -153,18 +156,22 @@ void object_copy(Object* target, Object* source) {
     target = source;
     break;
   case TYPE_INT:
-    target->int_val = source->int_val;
+    int_copy = *((Int*)ref);
+    target->ref = &int_copy;
     break;
   case TYPE_FLOAT:
-    target->float_val = source->float_val;
+    float_copy = *((Float*)ref);
+    target->ref = &float_copy;
     break;
   case TYPE_CHAR:
-    target->char_val = source->char_val;
+    char_copy = *((Char*)ref);
+    target->ref = &char_copy;
     break;
   case TYPE_STRING:
   case TYPE_SYMBOL:
-    target->str_val = malloc(strlen(source->str_val) + 1);
-    strcpy(target->str_val, source->str_val);
+    str_data = (Str)ref;
+    target->ref = malloc(strlen(str_data) + 1);
+    strcpy(target->ref, str_data);
     break;
   case TYPE_CONS:
     target->length = source->length;
@@ -197,9 +204,7 @@ Object* list_empty() {
 
 Object* make_pair(Object* first, Object* second) {
   Object* obj = object_allocate();
-  obj->type = TYPE_CONS;
-
-  obj->ref    = object_allocate();
+  obj->type   = TYPE_CONS;
   obj->ref    = first;
   obj->next   = second;
   obj->length = -1;
@@ -332,11 +337,11 @@ bool is_bool(Object *obj) {
 
 bool is_false(Object *obj) {
   return IS_OBJECT(obj) &&
-    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && obj->int_val == 0));
+    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && obj->ref == &False));
 }
 
 bool is_true(Object *obj) {
-  return IS_TYPE(obj, TYPE_BOOL) && obj->int_val == 1;
+  return IS_TYPE(obj, TYPE_BOOL) && obj->ref == &True;
 }
 
 bool bool_to_int(Object* obj) {
@@ -345,7 +350,11 @@ bool bool_to_int(Object* obj) {
     exit(0);
   }
 
-  return obj->int_val;
+  if (is_true(obj)) {
+    return 1;
+  }
+
+  return 0;
 }
 
 Object* int_to_bool(bool value) {
@@ -365,7 +374,7 @@ Object* make_array(size_t size) {
   object->type    = TYPE_ARRAY;
 
   Object* array[size];
-  object->array_ref = array;
+  object->ref    = array;
   object->length = size;
 
   return object;
@@ -382,7 +391,7 @@ void array_set(Object *array, size_t index, Object* value) {
     exit(0);
   }
 
-  Object** storage = array->array_ref;
+  Object** storage = (Object**)array->ref;
   storage[index] = value;
 }
 
@@ -396,7 +405,7 @@ Object* array_at(Object* array, size_t index) {
     return object_null();
   }
 
-  Object** storage = array->array_ref;
+  Object** storage = (Object**)array->ref;
   return storage[index];
 }
 
@@ -434,7 +443,6 @@ Object* make_map() {
   for (long i = 0; i < MAP_BUCKET_COUNT; i++) {
     array_set(map, i, list_empty());
   }
-  map->int_val = MAP_BUCKET_COUNT;
   map->length = 0;
   map->type = TYPE_MAP;
   return map;
@@ -447,10 +455,11 @@ void map_set(Object* map, Object* key, Object* value) {
   long key_hash = object_hash_code(key);
   printf("Key hash: %ld\n", key_hash);
 
-  size_t index = key_hash % map->int_val;
+  size_t index = key_hash % MAP_BUCKET_COUNT;
   printf("Storage index: %zu\n", index);
 
-  Object* bucket = map->array_ref[index];
+  Object** storage = (Object**)map->ref;
+  Object* bucket = storage[index];
   assert(is_list(bucket));
   printf("Bucket: ");
   say(bucket);
@@ -464,25 +473,28 @@ Object* map_get_bucket(Object* map, Object* key) {
   long key_hash = object_hash_code(key);
   printf("Key hash: %ld\n", key_hash);
 
-  size_t index = key_hash % map->int_val;
+  size_t index = key_hash % MAP_BUCKET_COUNT;
   printf("Storage index: %zu\n", index);
 
-  assert(is_list(map->array_ref[index]));
-  return map->array_ref[index];
+  Object** storage = (Object**)map->ref;
+  assert(is_list(storage[index]));
+  return storage[index];
 }
 
 void map_set_bucket(Object* map, Object* key, Object* bucket) {
   long key_hash = object_hash_code(key);
-  size_t index = key_hash % map->int_val;
+  size_t index = key_hash % MAP_BUCKET_COUNT;
 
   assert(is_list(bucket));
-  map->array_ref[index] = bucket;
+  Object** storage = (Object**)map->ref;
+  storage[index] = bucket;
 }
 
 Object* map_get(Object* map, Object* key) {
   long key_hash = object_hash_code(key);
-  size_t index  = key_hash % map->int_val;
-  Object* bucket = map->array_ref[index];
+  size_t index  = key_hash % MAP_BUCKET_COUNT;
+  Object** storage = (Object**)map->ref;
+  Object* bucket = storage[index];
 
   Object* pair;
   while (IS_TYPE(bucket, TYPE_NULL)) {
@@ -529,10 +541,10 @@ void print(Object* obj) {
 
   switch(obj->type) {
   case TYPE_INT:
-    printf("%ld", obj->int_val);
+    printf("%ld", *((Int*)obj->ref));
     break;
   case TYPE_FLOAT:
-    printf("%f:%s", obj->float_val, type_name(obj));
+    printf("%f:%s", *((Float*)obj->ref), type_name(obj));
     break;
   case TYPE_BOOL:
     if (is_true(obj)) {
@@ -542,13 +554,13 @@ void print(Object* obj) {
     }
     break;
   case TYPE_STRING:
-    printf("\"%s\"", obj->str_val);
+    printf("\"%s\"", (Str)obj->ref);
     break;
   case TYPE_CHAR:
-    printf("\%c", obj->char_val);
+    printf("\%c", *((Char*)obj->ref));
     break;
   case TYPE_SYMBOL:
-    printf("'%s", obj->str_val);
+    printf("'%s", (Str)obj->ref);
     break;
   case TYPE_NULL:
     printf("null");
@@ -576,9 +588,9 @@ bool is_zero(Object* number) {
 
   switch(number->type) {
     case TYPE_INT:
-      return number->int_val == 0;
+      return *((Int*)number->ref) == 0;
     case TYPE_FLOAT:
-      return number->float_val == 0.0;
+      return *((Float*)number->ref) == 0.0;
     default:
       fprintf(stderr, "TypeError: zero? only works on numeric types");
       exit(0);
@@ -627,14 +639,14 @@ bool is_equal(Object* object1, Object* object2) {
         return true;
       case TYPE_INT:
       case TYPE_BOOL:
-        return object1->int_val == object2->int_val;
+        return *((Bool*)object1->ref) == *((Bool*)object2->ref);
       case TYPE_FLOAT:
-        return object1->float_val == object2->float_val;
+        return *((Float*)object1->ref) == *((Float*)object2->ref);
       case TYPE_CHAR:
-        return object1->char_val == object2->char_val;
+        return *((Char*)object1->ref) == *((Char*)object2->ref);
       case TYPE_STRING:
       case TYPE_SYMBOL:
-        return strcmp(object1->str_val, object2->str_val) == 0;
+        return strcmp((Str)object1->ref, (Str)object2->ref) == 0;
       case TYPE_CONS:
         return list_is_equal(object1, object2);
       case TYPE_ARRAY:
@@ -646,10 +658,10 @@ bool is_equal(Object* object1, Object* object2) {
   }
   else if (is_number(object1) && is_number(object2)) {
     if (is_integer(object1)) {
-      return object1->int_val == object2->float_val;
+      return *((Int*)object1->ref) == *((Float*)object2->ref);
     }
     if (is_float(object1)) {
-      return object1->float_val == object2->int_val;
+      return *((Float*)object1->ref) == *((Int*)object2->ref);
     }
   }
 
@@ -660,7 +672,7 @@ long object_hash_code(Object* obj) {
   switch (obj->type) {
   case TYPE_SYMBOL:
   case TYPE_STRING:
-    return string_hash(obj->str_val, obj->length);
+    return string_hash((Str)obj->ref, obj->length);
   default:
     fprintf(stderr, "TypeError: unknown hash code type '%s'\n", type_name(obj));
     exit(0);
