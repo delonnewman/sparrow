@@ -2,8 +2,8 @@
 #include <assert.h>
 
 void test_integer_equality() {
-  assert(is_equal(object_integer(1), object_integer(1)));
-  assert(!is_equal(object_integer(2), object_integer(1)));
+  assert(is_equal(object_integer(3), object_integer(3)));
+  assert(!is_equal(object_integer(2), object_integer(5)));
 }
 
 void test_float_equality() {
