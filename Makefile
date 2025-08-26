@@ -34,7 +34,7 @@ run_test: compile_test
 	./test/$(TEST)_test$(EXE)
 
 compile_test: $(NAME).o
-	$(CC) $(CFLAGS) -I$(SRC) -o ./test/$(TEST)_test$(EXE) test/$(TEST)_test.c $(NAME).o $(LDLIBS)
+	$(CC) $(CFLAGS) -I$(SRC) -o ./test/$(TEST)_test$(EXE) test/test_suite.c test/$(TEST)_test.c $(NAME).o $(LDLIBS)
 
 clean_test: $(TEST_DIR)/*_test
 ifdef TEST
