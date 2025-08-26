@@ -18,13 +18,13 @@ void object_destroy(Object *object) {
     break;
   case TYPE_INT:
   case TYPE_FLOAT:
-    free(object);
-    break;
   case TYPE_STRING:
   case TYPE_SYMBOL:
+    free(object->ref);
     free(object);
     break;
   case TYPE_CONS:
+    free(object->ref);
     free(object);
     object_destroy(list_next(object));
     break;
@@ -141,9 +141,9 @@ Object* object_false() {
     return BOOL_FALSE;
   }
 
-  Object* object  = object_allocate();
-  object->type    = TYPE_BOOL;
-  object->ref     = malloc(sizeof(Bool));
+  Object* object = object_allocate();
+  object->type   = TYPE_BOOL;
+  object->ref    = malloc(sizeof(Bool));
   *((Bool*)object->ref) = 0;
 
   BOOL_FALSE = object;
@@ -168,15 +168,15 @@ void object_copy(Object* target, Object* source) {
     break;
   case TYPE_INT:
     int_copy = INT(source);
-    target->ref = &int_copy;
+    *((Int*)target->ref) = int_copy;
     break;
   case TYPE_FLOAT:
     float_copy = FLOAT(source);
-    target->ref = &float_copy;
+    *((Float*)target->ref) = float_copy;
     break;
   case TYPE_CHAR:
     char_copy = CHAR(source);
-    target->ref = &char_copy;
+    *((Char*)target->ref) = char_copy;
     break;
   case TYPE_STRING:
   case TYPE_SYMBOL:
