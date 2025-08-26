@@ -104,6 +104,18 @@ Object* object_symbol(Str value) {
   return object;
 }
 
+Bool is_char(Object* obj) {
+  return IS_TYPE(obj, TYPE_CHAR);
+}
+
+Bool is_string(Object* obj) {
+  return IS_TYPE(obj, TYPE_STRING);
+}
+
+Bool is_symbol(Object* obj) {
+  return IS_TYPE(obj, TYPE_SYMBOL);
+}
+
 Object* BOOL_TRUE = NULL;
 Bool True = 1;
 
@@ -582,18 +594,21 @@ void say(Object* obj) {
   printf("\n");
 }
 
-Bool is_zero(Object* number) {
-  if (number == NULL) return false;
-
-  switch(number->type) {
-    case TYPE_INT:
-      return INT(number) == 0;
-    case TYPE_FLOAT:
-      return FLOAT(number) == 0.0;
-    default:
-      fprintf(stderr, "TypeError: zero? only works on numeric types");
-      exit(0);
+Bool is_zero(Object* obj) {
+  if (!is_number(obj)) {
+    return false;
   }
+
+  switch(obj->type) {
+    case TYPE_INT:
+      return INT(obj) == 0;
+    case TYPE_FLOAT:
+      return FLOAT(obj) == 0.0;
+    default:
+      break;
+  }
+
+  return false;
 }
 
 Bool is_integer(Object* obj) {

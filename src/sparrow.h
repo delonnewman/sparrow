@@ -64,19 +64,19 @@ Object* list_cons(Object* value, Object* list);
 Object* list_first(Object* list);
 Object* list_next(Object* list);
 void list_print(Object* list);
-bool is_cons(Object* cons);
-bool is_list(Object* cons);
+Bool is_cons(Object* cons);
+Bool is_list(Object* cons);
 
 Object* make_pair(Object* first, Object* second);
 Object* pair_key(Object* pair);
 Object* pair_value(Object* pair);
-bool is_pair(Object* cons);
+Bool is_pair(Object* cons);
 
 Object* make_array(Nat size);
 Object* array_at(Object* array, Nat index);
 void array_set(Object* array, Nat index, Object* value);
 void array_print(Object* array);
-bool is_array(Object* array);
+Bool is_array(Object* array);
 
 Object* make_map();
 void map_set(Object* map, Object* key, Object* value);
@@ -103,6 +103,9 @@ Bool is_bool(Object* obj);
 Bool is_integer(Object* obj);
 Bool is_float(Object* obj);
 Bool is_number(Object* obj);
+Bool is_char(Object* obj);
+Bool is_string(Object* obj);
+Bool is_symbol(Object* obj);
 
 Int object_hash_code(Object* obj);
 Int string_hash(const Str string, Nat strlen);
