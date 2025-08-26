@@ -2,15 +2,21 @@
 #include <assert.h>
 
 void test_object_null() {
-    assert(is_null(object_null()));
+  Object* null = object_null();
+
+  assert(is_object(null));
+  assert(is_null(null));
+  assert(is_false(null));
+  assert(!is_true(null));
+  assert(!is_bool(null));
 }
 
 void test_null_count() {
-    assert(collection_count(object_null()) == 0);
+  assert(length(object_null()) == 0);
 }
 
 void test_null_is_empty() {
-    assert(is_empty(object_null()));
+  assert(is_empty(object_null()));
 }
 
 int main() {

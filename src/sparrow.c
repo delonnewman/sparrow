@@ -118,16 +118,16 @@ Bool is_symbol(Object* obj) {
 }
 
 Object* BOOL_TRUE = NULL;
-Bool True = 1;
 
 Object* object_true() {
   if (BOOL_TRUE != NULL) {
     return BOOL_TRUE;
   }
 
-  Object* object  = object_allocate();
-  object->type    = TYPE_BOOL;
-  object->ref     = &True;
+  Object* object = object_allocate();
+  object->type   = TYPE_BOOL;
+  object->ref    = malloc(sizeof(Bool));
+  *((Bool*)object->ref) = 1;
 
   BOOL_TRUE = object;
 
@@ -135,7 +135,6 @@ Object* object_true() {
 }
 
 Object* BOOL_FALSE = NULL;
-Bool False = 0;
 
 Object* object_false() {
   if (BOOL_FALSE != NULL) {
@@ -144,7 +143,8 @@ Object* object_false() {
 
   Object* object  = object_allocate();
   object->type    = TYPE_BOOL;
-  object->ref     = &False;
+  object->ref     = malloc(sizeof(Bool));
+  *((Bool*)object->ref) = 0;
 
   BOOL_FALSE = object;
 
@@ -349,11 +349,11 @@ Bool is_bool(Object *obj) {
 
 Bool is_false(Object *obj) {
   return IS_OBJECT(obj) &&
-    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && obj->ref == &False));
+    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && *((Bool*)obj->ref) == 0));
 }
 
 Bool is_true(Object *obj) {
-  return IS_TYPE(obj, TYPE_BOOL) && obj->ref == &True;
+  return IS_TYPE(obj, TYPE_BOOL) && *((Bool*)obj->ref) == 1;
 }
 
 Bool bool_to_int(Object* obj) {
