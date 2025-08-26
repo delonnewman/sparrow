@@ -230,7 +230,7 @@ Object* list_empty() {
 
   Object* obj = object_allocate();
   obj->type   = TYPE_CONS;
-  obj->ref    = NULL;
+  obj->ref    = object_null();
   obj->next   = object_null();
   obj->length = 0;
 
