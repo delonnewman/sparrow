@@ -7,18 +7,34 @@ void test_empty() {
   assert(is_list(list));
   assert(is_empty(list));
   assert(length(list) == 0);
+
   assert(is_null(list_first(list)));
   assert(is_null(list_next(list)));
 }
 
 void test_cons() {
-  Object* list = list_cons(object_integer(1), list_cons(object_integer(2), list_empty()));
+  Object* list = list_cons(object_integer(3), list_cons(object_integer(2), list_empty()));
 
+  assert(is_list(list));
   assert(length(list) == 2);
-  assert(is_equal(list_first(list), object_integer(1)));
-  assert(is_equal(list_first(list_next(list)), object_integer(2)));
-  assert(is_empty(list_next(list_next(list))));
-  assert(is_null(list_first(list_next(list_next(list)))));
+
+  Object* obj = list_first(list);
+  assert(obj->type == TYPE_INT);
+  Int value = INT(obj);
+  assert(value == 3);
+
+  obj = list_first(list_next(list));
+  value = INT(obj);
+  assert(value == 2);
+
+  obj = list_next(list_next(list));
+  assert(is_empty(obj));
+
+  obj = list_first(list_next(list_next(list)));
+  assert(is_null(obj));
+
+  obj = list_next(list_next(list_next(list)));
+  assert(is_null(obj));
 }
 
 void test_cons_and_null() {
@@ -26,9 +42,10 @@ void test_cons_and_null() {
   Object* list = list_cons(object_integer(1), obj);
 
   assert(is_null(obj));
+  assert(length(list) == 1);
+
   assert(!is_null(list_next(list)));
   assert(is_equal(list_first(list), object_integer(1)));
-  assert(length(list) == 1);
 }
 
 void test_is_list() {

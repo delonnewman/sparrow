@@ -230,7 +230,7 @@ Object* list_empty() {
   Object* obj = object_allocate();
   obj->type   = TYPE_CONS;
   obj->ref    = NULL;
-  obj->next   = NULL;
+  obj->next   = object_null();
   obj->length = 0;
 
   EMPTY = obj;
@@ -250,7 +250,7 @@ Object* list_cons(Object* value, Object* list) {
 
   Object* obj = object_allocate();
   obj->type   = TYPE_CONS;
-  obj->ref    = value;
+  obj->ref    = (void*)value;
   obj->next   = list;
   obj->length = list->length + 1;
 
@@ -263,12 +263,12 @@ Object* list_first(Object* list) {
     exit(0);
   }
 
-  Object* value = (Object*)list->ref;
+  void* value = list->ref;
   if (value == NULL) {
     return object_null();
   }
 
-  return value;
+  return (Object*)value;
 }
 
 Object* list_next(Object *list) {
@@ -421,14 +421,14 @@ Object* array_at(Object* array, Nat index) {
 }
 
 void array_print(Object* array) {
-  printf("[");
+  putchar('[');
   for (long i = 0; i < array->length; i++) {
     print(array_at(array, i));
     if (i < (array->length - 1)) {
       printf(", ");
     }
   }
-  printf("]");
+  putchar(']');
 }
 
 Bool array_is_equal(Object* this, Object* other) {
