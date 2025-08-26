@@ -1,5 +1,4 @@
-#include "sparrow.h"
-#include <assert.h>
+#include "test_suite.h"
 
 void test_empty() {
   Object* list = list_empty();
@@ -19,7 +18,6 @@ void test_cons() {
   assert(length(list) == 2);
 
   Object* obj = list_first(list);
-  assert(obj->type == TYPE_INT);
   Int value = INT(obj);
   assert(value == 3);
 
@@ -53,6 +51,12 @@ void test_is_list() {
 
   assert(is_list(list));
   assert(is_cons(list));
+  assert(is_countable(list));
+
+  assert_is_not_bool(list);
+  assert_is_not_text(list);
+  assert_is_not_number(list);
+  assert_is_not_null(list);
 }
 
 void test_pair() {
@@ -60,6 +64,7 @@ void test_pair() {
 
   assert(is_pair(pair));
   assert(is_cons(pair));
+
   assert(is_equal(pair_key(pair), object_integer(1)));
   assert(is_equal(pair_value(pair), object_integer(2)));
 }

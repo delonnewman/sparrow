@@ -62,7 +62,8 @@ bool is_null(Object* obj) {
 Object* object_integer(Int value) {
   Object* object = object_allocate();
   object->type   = TYPE_INT;
-  object->ref    = &value;
+  object->ref    = malloc(sizeof(Int));
+  *((Int*)object->ref) = value;
 
   return object;
 }
@@ -70,7 +71,8 @@ Object* object_integer(Int value) {
 Object* object_char(Char value) {
   Object* object = object_allocate();
   object->type   = TYPE_CHAR;
-  object->ref    = &value;
+  object->ref    = malloc(sizeof(Char));
+  *((Char*)object->ref) = value;
 
   return object;
 }
@@ -78,7 +80,8 @@ Object* object_char(Char value) {
 Object* object_float(Float value) {
   Object* object = object_allocate();
   object->type   = TYPE_FLOAT;
-  object->ref    = &value;
+  object->ref    = malloc(sizeof(Float));
+  *((Float*)object->ref) = value;
 
   return object;
 }
@@ -88,7 +91,6 @@ Object* object_string(Str value) {
   object->type    = TYPE_STRING;
   object->length  = strlen(value);
   object->ref     = malloc(strlen(value) + 1);
-
   strcpy(object->ref, value);
 
   return object;
@@ -98,7 +100,6 @@ Object* object_symbol(Str value) {
   Object* object = object_allocate();
   object->type   = TYPE_SYMBOL;
   object->ref    = malloc(strlen(value) + 1);
-
   strcpy(object->ref, value);
 
   return object;
@@ -652,7 +653,6 @@ Bool is_equal(Object* object1, Object* object2) {
       case TYPE_NULL:
         return true;
       case TYPE_INT:
-        printf("is_equal(%ld, %ld)\n", INT(object1), INT(object2));
         return INT(object1) == INT(object2);
       case TYPE_BOOL:
         return BOOL(object1) == BOOL(object2);
