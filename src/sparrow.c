@@ -1,6 +1,6 @@
 #include "sparrow.h"
 #include <stdlib.h>
-#include <math.h>
+#include <tgmath.h>
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
