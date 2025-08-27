@@ -471,36 +471,15 @@ Object* make_map() {
 }
 
 void map_set(Object* map, Object* key, Object* value) {
-  printf("Setting map key: ");
-  print(key); printf(" => "); say(value);
-
   long key_hash = object_hash_code(key);
-  printf("Key hash: %ld\n", key_hash);
-
   size_t index = key_hash % MAP_BUCKET_COUNT;
-  printf("Storage index: %zu\n", index);
 
   Object** storage = (Object**)map->ref;
   Object* bucket = storage[index];
-  assert(is_list(bucket));
-  printf("Bucket: ");
-  say(bucket);
 
   Object* pair = make_pair(key, value);
   map_set_bucket(map, key, list_cons(pair, bucket));
   map->length += 1;
-}
-
-Object* map_get_bucket(Object* map, Object* key) {
-  long key_hash = object_hash_code(key);
-  printf("Key hash: %ld\n", key_hash);
-
-  size_t index = key_hash % MAP_BUCKET_COUNT;
-  printf("Storage index: %zu\n", index);
-
-  Object** storage = (Object**)map->ref;
-  assert(is_list(storage[index]));
-  return storage[index];
 }
 
 void map_set_bucket(Object* map, Object* key, Object* bucket) {
@@ -519,7 +498,7 @@ Object* map_get(Object* map, Object* key) {
   Object* bucket = storage[index];
 
   Object* pair;
-  while (IS_TYPE(bucket, TYPE_NULL)) {
+  while (IS_TYPE(bucket, TYPE_NULL) == false) {
     pair = list_first(bucket);
     if (is_equal(pair_key(pair), key)) {
       return pair_value(pair);
@@ -535,7 +514,7 @@ Bool is_map(Object* map) {
 }
 
 Bool is_coll(Object* obj) {
-  return is_array(obj) || is_list(obj);
+  return is_array(obj) || is_list(obj) || is_map(obj);
 }
 
 Bool is_countable(Object* obj) {

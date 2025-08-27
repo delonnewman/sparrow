@@ -3,35 +3,10 @@
 
 void test_make_map() {
     Object* map = make_map();
+
     assert(is_map(map));
-
-    for (long i = 0; i < map->int_val; i++) {
-        assert(is_list(map->array_ref[i]));
-    }
-
-    Object* pair = make_array(2);
-    assert(is_array(pair));
-
-    array_set(pair, 0, object_string("a"));
-    assert(is_equal(array_at(pair, 0), object_string("a")));
-
-    array_set(pair, 1, object_integer(1));
-    assert(is_equal(array_at(pair, 1), object_integer(1)));
-
-    Object* bucket = list_cons(pair, list_empty());
-    assert(is_list(bucket));
-    assert(!is_empty(bucket));
-
-    map_set_bucket(map, object_string("a"), list_cons(pair, list_empty()));
-
-    bucket = map_get_bucket(map, object_string("a"));
-    assert(is_list(bucket));
-    assert(!is_empty(bucket));
-
-    pair = list_first(bucket);
-    assert(is_array(pair));
-
-    assert(is_equal(array_at(pair, 1), object_integer(1)));
+    assert(is_empty(map));
+    assert(length(map) == 0);
 }
 
 void test_map_set_and_get() {
@@ -43,21 +18,22 @@ void test_map_set_and_get() {
     map_set(map, object_string("e"), object_integer(5));
     map_set(map, object_string("f"), object_integer(6));
 
-    /* Object* bucket = map_get_bucket(map, object_string("a")); */
-    /* assert(!is_null(bucket)); */
+    Object* value = map_get(map, object_string("a"));
+    assert(!is_null(value));
+    assert(is_equal(value, object_integer(1)));
 
-    /* Object* pair = list_first(bucket); */
-    /* assert(is_equal(array_at(pair, 0), object_string("a"))); */
+    value = map_get(map, object_string("f"));
+    assert(!is_null(value));
+    assert(is_equal(value, object_integer(6)));
 
-    /* Object* value = map_get(map, object_string("a")); */
-
-    /* assert(!is_null(value)); */
-    /* assert(is_equal(value, object_integer(1))); */
+    value = map_get(map, object_string("d"));
+    assert(!is_null(value));
+    assert(is_equal(value, object_integer(4)));
 }
 
 int main() {
   test_make_map();
-  /* test_map_set_and_get(); */
+  test_map_set_and_get();
 
   return EXIT_SUCCESS;
 }
