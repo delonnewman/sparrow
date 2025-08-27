@@ -1,5 +1,4 @@
-#include "sparrow.h"
-#include <assert.h>
+#include "test_suite.h"
 
 void test_make_array() {
   Object* array = make_array(10);
@@ -12,15 +11,22 @@ void test_array_at_and_set() {
   Object* array = make_array(2);
 
   array_set(array, 0, object_integer(1));
-  array_set(array, 1, object_integer(2));
-
   assert(is_equal(array_at(array, 0), object_integer(1)));
+
+  array_set(array, 1, object_integer(2));
   assert(is_equal(array_at(array, 1), object_integer(2)));
+
+  // out of range
+  assert(is_equal(array_at(array, 2), object_null()));
+
+  // reverse lookup
+  SKIP(assert(is_equal(array_at(array, -1), object_integer(2))));
 }
 
 void test_array_at_empty() {
   Object* array = make_array(0);
 
+  assert(is_empty(array));
   assert(is_null(array_at(array, 0)));
 }
 
