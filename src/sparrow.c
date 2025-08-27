@@ -434,7 +434,7 @@ Object* array_at(Object* array, Int index) {
 
 void array_print(Object* array) {
   putchar('[');
-  for (long i = 0; i < array->length; i++) {
+  for (Int i = 0; i < array->length; i++) {
     print(array_at(array, i));
     if (i < (array->length - 1)) {
       printf(", ");
