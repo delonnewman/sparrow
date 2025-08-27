@@ -407,14 +407,18 @@ void array_set(Object *array, Nat index, Object* value) {
   storage[index] = value;
 }
 
-Object* array_at(Object* array, Nat index) {
+Object* array_at(Object* array, Int index) {
   if (!is_array(array)) {
     fprintf(stderr, "TypeError: invalid operation on %s, 'at'", type_name(array));
     exit(0);
   }
 
-  if (index >= (size_t)array->length) {
+  if (index >= array->length) {
     return object_null();
+  }
+
+  if (index < 0) {
+    index = array->length + index;
   }
 
   Object** storage = (Object**)array->ref;

@@ -73,7 +73,7 @@ Object* pair_value(Object* pair);
 Bool is_pair(Object* cons);
 
 Object* make_array(Nat size);
-Object* array_at(Object* array, Nat index);
+Object* array_at(Object* array, Int index);
 void array_set(Object* array, Nat index, Object* value);
 void array_print(Object* array);
 Bool is_array(Object* array);
