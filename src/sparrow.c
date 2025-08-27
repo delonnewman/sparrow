@@ -1,4 +1,5 @@
 #include "sparrow.h"
+#include <stdlib.h>
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
@@ -29,7 +30,7 @@ void object_destroy(Object *object) {
     free(object);
     break;
   case TYPE_ARRAY:
-    for (size_t i = 0; i < object->length; i++) {
+    for (Int i = 0; i < object->length; i++) {
       object_destroy(array_at(object, i));
     }
     free(object->ref);
