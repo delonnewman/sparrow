@@ -36,6 +36,7 @@ void object_destroy(Object *object) {
     }
     free(object->ref);
     free(object);
+    break;
   default:
     fprintf(stderr, "TypeError: invalid type");
     exit(0);
