@@ -2,7 +2,10 @@
 #include <assert.h>
 
 void test_make_array() {
-  assert(is_array(make_array(0)));
+  Object* array = make_array(10);
+
+  assert(is_array(array));
+  assert(length(array) == 10);
 }
 
 void test_array_at_and_set() {
