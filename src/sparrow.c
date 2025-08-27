@@ -429,7 +429,12 @@ Object* array_at(Object* array, Int index) {
   }
 
   Object** storage = (Object**)array->ref;
-  return storage[index];
+  Object* value = storage[index];
+  if (value == NULL) {
+    return object_null();
+  }
+
+  return value;
 }
 
 void array_print(Object* array) {

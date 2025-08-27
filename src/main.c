@@ -19,9 +19,9 @@ int main() {
 
   say(list_cons(list1, list2));
 
-  Object* array = make_array(2);
+  Object* array = make_array(3);
   array_set(array, 0, object_integer(1));
-  array_set(array, 1, object_integer(2));
+  array_set(array, 2, object_integer(2));
   say(array);
 
   return EXIT_SUCCESS;
