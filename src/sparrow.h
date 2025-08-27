@@ -28,9 +28,9 @@ typedef void* Ref;
 typedef enum ObjectType {
   TYPE_VOID,
   TYPE_NULL,
+  TYPE_BOOL,
   TYPE_INT,
   TYPE_FLOAT,
-  TYPE_BOOL,
   TYPE_CHAR,
   TYPE_STRING,
   TYPE_SYMBOL,
