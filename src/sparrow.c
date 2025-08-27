@@ -392,8 +392,7 @@ Object* make_array(Nat size) {
   Object* object  = object_allocate();
   object->type    = TYPE_ARRAY;
 
-  Object* array[size];
-  object->ref    = array;
+  object->ref    = malloc(sizeof(Object*) * size);
   object->length = size;
 
   return object;
