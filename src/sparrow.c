@@ -29,6 +29,7 @@ void object_destroy(Object *object) {
     object_destroy(list_next(object));
     free(object);
     break;
+  case TYPE_MAP:
   case TYPE_ARRAY:
     for (Int i = 0; i < object->length; i++) {
       object_destroy(array_at(object, i));
