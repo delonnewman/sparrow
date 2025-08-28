@@ -156,6 +156,7 @@ void print(Object* obj) {
     break;
   case TYPE_ARRAY:
     array_print(obj);
+    break;
   case TYPE_MAP:
     map_print(obj);
     break;
