@@ -21,10 +21,11 @@ void test_array_at_and_set() {
   assert(is_equal(array_at(array, 2), object_null()));
 
   // out of range
-  assert(is_equal(array_at(array, 2), object_null()));
+  assert(is_equal(array_at(array, 5), object_null()));
 
   // reverse lookup
   assert(is_equal(array_at(array, -2), object_integer(2)));
+  assert(is_equal(array_at(array, -1), object_null()));
 }
 
 void test_array_at_empty() {
