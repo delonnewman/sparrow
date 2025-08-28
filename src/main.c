@@ -23,6 +23,8 @@ int main() {
 
   say(list_cons(list1, list2));
 
+  say(make_pair(object_string("a"), object_integer(1)));
+
   Object* array = make_array(3);
   array_set(array, 0, object_integer(1));
   array_set(array, 2, object_integer(2));

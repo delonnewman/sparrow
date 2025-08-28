@@ -1,4 +1,5 @@
 #include "sparrow.h"
+#include <stdio.h>
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
@@ -156,10 +157,18 @@ void print(Object* obj) {
   case TYPE_ARRAY:
     array_print(obj);
   case TYPE_MAP:
-    array_print(obj);
+    map_print(obj);
     break;
   case TYPE_CONS:
-    list_print(obj);
+    if (is_pair(obj)) {
+      putchar('(');
+      print(pair_key(obj));
+      printf(" . ");
+      print(pair_value(obj));
+      putchar(')');
+    } else {
+      list_print(obj);
+    }
     break;
   default:
     fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
@@ -571,8 +580,10 @@ Object* map_keys(Object* map) {
   Object* list = list_empty();
 
   Object* bucket;
+  Object** storage;
   for (Int i = 0; i < map->length; i++) {
-    bucket = ((Object**)map->ref)[i];
+    storage = (Object**)map->ref;
+    bucket = storage[i];
     Object* current = bucket;
     Object* pair = list_first(current);
     while (!is_null(pair)) {
