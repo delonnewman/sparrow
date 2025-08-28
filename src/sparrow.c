@@ -163,7 +163,7 @@ void print(Object* obj) {
     if (is_pair(obj)) {
       putchar('(');
       print(pair_key(obj));
-      printf(" . ");
+      printf(" => ");
       print(pair_value(obj));
       putchar(')');
     } else {
@@ -579,14 +579,19 @@ Object* map_get(Object* map, Object* key) {
 Object* map_keys(Object* map) {
   Object* list = list_empty();
 
+  printf("length(map) == %ld\n", map->length);
+
   Object* bucket;
   Object** storage;
   for (Int i = 0; i < map->length; i++) {
+    printf("%ld\n", i);
     storage = (Object**)map->ref;
     bucket = storage[i];
+    printf("length(bucket) == %ld\n", bucket->length);
     Object* current = bucket;
     Object* pair = list_first(current);
     while (!is_null(pair)) {
+      say(pair);
       list = list_cons(pair_key(pair), list);
       current = list_next(current);
       pair = list_first(current);
