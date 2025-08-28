@@ -16,6 +16,9 @@ void object_destroy(Object *object) {
   case TYPE_NULL:
     // ignore singletons
     break;
+  case TYPE_UNDEFINED:
+    free(object);
+    break;
   case TYPE_INT:
   case TYPE_FLOAT:
   case TYPE_STRING:
