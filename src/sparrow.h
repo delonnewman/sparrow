@@ -26,7 +26,7 @@ typedef bool Bool;
 typedef void* Ref;
 
 typedef enum ObjectType {
-  TYPE_VOID,
+  TYPE_UNDEFINED,
   TYPE_NULL,
   TYPE_BOOL,
   TYPE_INT,

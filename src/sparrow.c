@@ -2,7 +2,7 @@
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
-  object->type   = TYPE_VOID;
+  object->type   = TYPE_UNDEFINED;
   object->ref    = NULL;
   object->next   = NULL;
   object->length = -1;
