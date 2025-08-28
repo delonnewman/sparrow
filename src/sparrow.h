@@ -90,6 +90,7 @@ Object* map_get(Object* map, Object* key);
 Object* map_keys(Object* map);
 Object* map_values(Object* map);
 Object* map_entries(Object* map);
+void map_print(Object* map);
 Bool is_map(Object* map);
 
 Nat length(Object* list);

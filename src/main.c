@@ -28,5 +28,9 @@ int main() {
   array_set(array, 2, object_integer(2));
   say(array);
 
+  Object* map = make_map();
+  map_set(map, object_string("a"), object_float(3.4));
+  say(map);
+
   return EXIT_SUCCESS;
 }

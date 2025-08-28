@@ -9,7 +9,7 @@ void test_make_map() {
     assert(length(map) == 0);
 }
 
-void test_map_set_and_get() {
+Object* setup_map() {
     Object* map = make_map();
     map_set(map, object_string("a"), object_integer(1));
     map_set(map, object_string("b"), object_integer(2));
@@ -17,6 +17,11 @@ void test_map_set_and_get() {
     map_set(map, object_string("d"), object_integer(4));
     map_set(map, object_string("e"), object_integer(5));
     map_set(map, object_string("f"), object_integer(6));
+    return map;
+}
+
+void test_map_set_and_get() {
+    Object* map = setup_map();
 
     Object* value = map_get(map, object_string("a"));
     assert(!is_null(value));
@@ -31,9 +36,22 @@ void test_map_set_and_get() {
     assert(is_equal(value, object_integer(4)));
 }
 
+void test_map_keys() {
+    Object* map = setup_map();
+
+    Object* keys = map_keys(map);
+    print(keys);
+    assert(is_list(keys));
+    assert(length(keys) == length(map));
+
+    assert(is_equal(list_first(keys), object_integer(1)));
+    assert(is_equal(list_first(list_next(keys)), object_integer(2)));
+}
+
 int main() {
   test_make_map();
   test_map_set_and_get();
+  test_map_keys();
 
   return EXIT_SUCCESS;
 }

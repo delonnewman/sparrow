@@ -116,7 +116,6 @@ Str type_name(Object* obj) {
   }
 }
 
-
 int object_inspect(char* buffer, Object* object) {
   Str type = type_name(object);
   return sprintf(buffer, "#<%s:%p>", type, (void*)object);
@@ -157,6 +156,7 @@ void print(Object* obj) {
   case TYPE_ARRAY:
     array_print(obj);
   case TYPE_MAP:
+    array_print(obj);
     break;
   case TYPE_CONS:
     list_print(obj);
@@ -378,7 +378,6 @@ void list_print(Object* list) {
   putchar('(');
 
   Object* current = list;
-
   while (!is_empty(current)) {
     print(list_first(current));
     Object* next = list_next(current);
@@ -409,11 +408,12 @@ Bool is_bool(Object *obj) {
 
 Bool is_false(Object *obj) {
   return IS_OBJECT(obj) &&
-    (TYPE_TAG_IS(obj, TYPE_NULL) || (TYPE_TAG_IS(obj, TYPE_BOOL) && *((Bool*)obj->ref) == 0));
+    (TYPE_TAG_IS(obj, TYPE_NULL) ||
+     (TYPE_TAG_IS(obj, TYPE_BOOL) && BOOL(obj) == 0));
 }
 
 Bool is_true(Object *obj) {
-  return IS_TYPE(obj, TYPE_BOOL) && *((Bool*)obj->ref) == 1;
+  return IS_TYPE(obj, TYPE_BOOL) && BOOL(obj) == 1;
 }
 
 Bool bool_to_int(Object* obj) {
@@ -435,10 +435,6 @@ Object* int_to_bool(Bool value) {
   }
 
   return object_false();
-}
-
-void object_dump(Object* obj) {
-  fprintf(stderr, "#<%s>\n", type_name(obj));
 }
 
 Object* make_array(Nat size) {
@@ -529,29 +525,33 @@ Object* make_map() {
 }
 
 void map_set(Object* map, Object* key, Object* value) {
-  long key_hash = object_hash_code(key);
-  size_t index = key_hash % MAP_BUCKET_COUNT;
+  if (!is_map(map)) {
+    fprintf(stderr, "TypeError: invalid operation on %s, 'set'", type_name(map));
+    exit(0);
+  }
+
+  Int key_hash = object_hash_code(key);
+  Nat index = key_hash % MAP_BUCKET_COUNT;
 
   Object** storage = (Object**)map->ref;
   Object* bucket = storage[index];
 
   Object* pair = make_pair(key, value);
-  map_set_bucket(map, key, list_cons(pair, bucket));
+  Object* new = list_cons(pair, bucket);
+
+  storage[index] = new;
   map->length += 1;
 }
 
-void map_set_bucket(Object* map, Object* key, Object* bucket) {
-  long key_hash = object_hash_code(key);
-  size_t index = key_hash % MAP_BUCKET_COUNT;
-
-  assert(is_list(bucket));
-  Object** storage = (Object**)map->ref;
-  storage[index] = bucket;
-}
-
 Object* map_get(Object* map, Object* key) {
-  long key_hash = object_hash_code(key);
-  size_t index  = key_hash % MAP_BUCKET_COUNT;
+  if (!is_map(map)) {
+    fprintf(stderr, "TypeError: invalid operation on %s, 'get'", type_name(map));
+    exit(0);
+  }
+
+  Int key_hash = object_hash_code(key);
+  Nat index = key_hash % MAP_BUCKET_COUNT;
+
   Object** storage = (Object**)map->ref;
   Object* bucket = storage[index];
 
@@ -567,8 +567,37 @@ Object* map_get(Object* map, Object* key) {
   return object_null();
 }
 
+Object* map_keys(Object* map) {
+  Object* list = list_empty();
+
+  Object* bucket;
+  for (Int i = 0; i < map->length; i++) {
+    bucket = ((Object**)map->ref)[i];
+    Object* current = bucket;
+    Object* pair = list_first(current);
+    while (!is_null(pair)) {
+      list = list_cons(pair_key(pair), list);
+      current = list_next(current);
+      pair = list_first(current);
+    }
+  }
+
+  return list;
+}
+
 Bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
+}
+
+void map_print(Object* array) {
+  putchar('{');
+  for (Int i = 0; i < array->length; i++) {
+    print(array_at(array, i));
+    if (i < (array->length - 1)) {
+      printf(", ");
+    }
+  }
+  putchar('}');
 }
 
 Bool is_coll(Object* obj) {
