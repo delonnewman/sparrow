@@ -52,10 +52,9 @@ Object* object_null() {
     return OBJECT_NULL;
   }
 
-  Object* object  = object_allocate();
-  object->type    = TYPE_NULL;
-  object->ref     = NULL;
-  object->length  = 0;
+  Object* object = object_allocate();
+  object->type   = TYPE_NULL;
+  object->length = 0;
 
   OBJECT_NULL = object;
 
