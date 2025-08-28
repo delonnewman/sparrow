@@ -6,6 +6,10 @@ int main() {
   Object* num = object_float(1.235);
   say(num);
 
+  char* buffer = malloc(sizeof(char) * 100);
+  object_inspect(buffer, num);
+  puts(buffer);
+
   Object* obj = list_cons(
     object_float(1.1),
     list_cons(object_char('a'),
