@@ -45,6 +45,128 @@ void object_destroy(Object *object) {
   }
 }
 
+void object_copy(Object* target, Object* source) {
+  Float float_copy;
+  Int int_copy;
+  Char char_copy;
+  Str str_data;
+
+  target->type = source->type;
+
+  switch (source->type) {
+  case TYPE_BOOL:
+  case TYPE_NULL:
+  case TYPE_ARRAY:
+  case TYPE_MAP:
+    target = source;
+    break;
+  case TYPE_INT:
+    int_copy = INT(source);
+    *((Int*)target->ref) = int_copy;
+    break;
+  case TYPE_FLOAT:
+    float_copy = FLOAT(source);
+    *((Float*)target->ref) = float_copy;
+    break;
+  case TYPE_CHAR:
+    char_copy = CHAR(source);
+    *((Char*)target->ref) = char_copy;
+    break;
+  case TYPE_STRING:
+  case TYPE_SYMBOL:
+    str_data = STR(source);
+    target->ref = malloc(strlen(str_data) + 1);
+    strcpy(target->ref, str_data);
+    break;
+  case TYPE_CONS:
+    target->length = source->length;
+    target->ref    = source->ref;
+    target->next   = source->next;
+    break;
+  default:
+    fprintf(stderr, "TypeError: unknown type '%s'", type_name(source));
+    exit(0);
+  }
+}
+
+Str type_name(Object* obj) {
+  switch (obj->type) {
+  case TYPE_INT:
+    return "Int";
+  case TYPE_FLOAT:
+    return "Float";
+  case TYPE_BOOL:
+    return "Bool";
+  case TYPE_CHAR:
+    return "Char";
+  case TYPE_STRING:
+    return "Str";
+  case TYPE_SYMBOL:
+    return "Sym";
+  case TYPE_CONS:
+    return "Cons";
+  case TYPE_NULL:
+    return "Null";
+  case TYPE_MAP:
+    return "Map";
+  case TYPE_ARRAY:
+    return "Array";
+  default:
+    return "Undefined";
+  }
+}
+
+
+int object_inspect(char* buffer, Object* object) {
+  Str type = type_name(object);
+  return sprintf(buffer, "#<%s:%p>", type, (void*)object);
+}
+
+void print(Object* obj) {
+  if (IS_OBJECT(obj) == false) {
+    fprintf(stderr, "TypeError: only objects can be printed\n");
+    exit(0);
+  }
+
+  switch(obj->type) {
+  case TYPE_INT:
+    printf("%ld", INT(obj));
+    break;
+  case TYPE_FLOAT:
+    printf("%f", FLOAT(obj));
+    break;
+  case TYPE_BOOL:
+    if (is_true(obj)) {
+      printf("true");
+    } else {
+      printf("false");
+    }
+    break;
+  case TYPE_STRING:
+    printf("\"%s\"", STR(obj));
+    break;
+  case TYPE_CHAR:
+    printf("\%c", CHAR(obj));
+    break;
+  case TYPE_SYMBOL:
+    printf("'%s", STR(obj));
+    break;
+  case TYPE_NULL:
+    printf("null");
+    break;
+  case TYPE_ARRAY:
+    array_print(obj);
+  case TYPE_MAP:
+    break;
+  case TYPE_CONS:
+    list_print(obj);
+    break;
+  default:
+    fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
+    exit(0);
+  }
+}
+
 Object* OBJECT_NULL = NULL;
 
 Object* object_null() {
@@ -159,50 +281,6 @@ Object* object_false() {
   BOOL_FALSE = object;
 
   return object;
-}
-
-void object_copy(Object* target, Object* source) {
-  Float float_copy;
-  Int int_copy;
-  Char char_copy;
-  Str str_data;
-
-  target->type = source->type;
-
-  switch (source->type) {
-  case TYPE_BOOL:
-  case TYPE_NULL:
-  case TYPE_ARRAY:
-  case TYPE_MAP:
-    target = source;
-    break;
-  case TYPE_INT:
-    int_copy = INT(source);
-    *((Int*)target->ref) = int_copy;
-    break;
-  case TYPE_FLOAT:
-    float_copy = FLOAT(source);
-    *((Float*)target->ref) = float_copy;
-    break;
-  case TYPE_CHAR:
-    char_copy = CHAR(source);
-    *((Char*)target->ref) = char_copy;
-    break;
-  case TYPE_STRING:
-  case TYPE_SYMBOL:
-    str_data = STR(source);
-    target->ref = malloc(strlen(str_data) + 1);
-    strcpy(target->ref, str_data);
-    break;
-  case TYPE_CONS:
-    target->length = source->length;
-    target->ref    = source->ref;
-    target->next   = source->next;
-    break;
-  default:
-    fprintf(stderr, "TypeError: unknown type '%s'", type_name(source));
-    exit(0);
-  }
 }
 
 Object* make_pair(Object* first, Object* second) {
@@ -323,34 +401,6 @@ Bool is_pair(Object* list) {
 
 Bool is_list(Object* list) {
   return (IS_TYPE(list, TYPE_CONS)) && list->length != -1;
-}
-
-Str type_name(Object* obj) {
-  switch (obj->type) {
-  case TYPE_INT:
-    return "Num[Int]";
-  case TYPE_FLOAT:
-    return "Num[Float]";
-  case TYPE_BOOL:
-    return "Bool";
-  case TYPE_CHAR:
-    return "Char";
-  case TYPE_STRING:
-    return "Str";
-  case TYPE_SYMBOL:
-    return "Sym";
-  case TYPE_CONS:
-    return "Cons";
-  case TYPE_NULL:
-    return "Null";
-  case TYPE_MAP:
-    return "Map";
-  case TYPE_ARRAY:
-    return "Array";
-  default:
-    fprintf(stderr, "TypeError: unknown type code '%d'\n", obj->type);
-    exit(0);
-  }
 }
 
 Bool is_bool(Object *obj) {
@@ -540,51 +590,6 @@ Nat length(Object *col) {
 
 Bool is_empty(Object* list) {
   return length(list) == 0;
-}
-
-void print(Object* obj) {
-  if (IS_OBJECT(obj) == false) {
-    fprintf(stderr, "TypeError: only objects can be printed\n");
-    exit(0);
-  }
-
-  switch(obj->type) {
-  case TYPE_INT:
-    printf("%ld", INT(obj));
-    break;
-  case TYPE_FLOAT:
-    printf("%f", FLOAT(obj));
-    break;
-  case TYPE_BOOL:
-    if (is_true(obj)) {
-      printf("true");
-    } else {
-      printf("false");
-    }
-    break;
-  case TYPE_STRING:
-    printf("\"%s\"", STR(obj));
-    break;
-  case TYPE_CHAR:
-    printf("\%c", CHAR(obj));
-    break;
-  case TYPE_SYMBOL:
-    printf("'%s", STR(obj));
-    break;
-  case TYPE_NULL:
-    printf("null");
-    break;
-  case TYPE_ARRAY:
-    array_print(obj);
-  case TYPE_MAP:
-    break;
-  case TYPE_CONS:
-    list_print(obj);
-    break;
-  default:
-    fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(obj));
-    exit(0);
-  }
 }
 
 void say(Object* obj) {

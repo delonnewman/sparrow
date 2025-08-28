@@ -48,7 +48,11 @@ typedef struct Object {
 
 Object* object_allocate();
 void object_destroy(Object* object);
+int object_inspect(char* buffer, Object* object);
 void object_copy(Object* target, Object* source);
+
+Str type_name(Object* obj);
+void print(Object* obj);
 
 Object* object_null();
 Object* object_integer(Int value);
@@ -114,6 +118,4 @@ Int string_hash(const Str string, Nat strlen);
 Bool bool_to_int(Object* obj);
 Object* int_to_bool(Bool);
 
-Str type_name(Object* obj);
-void print(Object* obj);
 void say(Object* obj);
