@@ -60,11 +60,21 @@ void test_map_values() {
     assert(length(values) == length(values));
 }
 
+void test_map_entries() {
+    Object* map = setup_map();
+
+    Object* entries = map_entries(map);
+    say(entries);
+    assert(is_list(entries));
+    assert(length(entries) == length(entries));
+}
+
 int main() {
   test_make_map();
   test_map_set_and_get();
   test_map_keys();
   test_map_values();
+  test_map_entries();
 
   return EXIT_SUCCESS;
 }

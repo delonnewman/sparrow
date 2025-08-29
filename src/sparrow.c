@@ -613,6 +613,24 @@ Object* map_values(Object* map) {
   return list;
 }
 
+Object* map_entries(Object* map) {
+  Object* list = list_empty();
+
+  Object* bucket;
+  for (Int i = 0; i < MAP_BUCKET_COUNT; i++) {
+    bucket = ((Object**)map->ref)[i];
+    Object* current = bucket;
+    Object* pair = list_first(current);
+    while (!is_null(pair)) {
+      list = list_cons(pair, list);
+      current = list_next(current);
+      pair = list_first(current);
+    }
+  }
+
+  return list;
+}
+
 Bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
 }
