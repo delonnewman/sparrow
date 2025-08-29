@@ -40,7 +40,6 @@ void test_map_keys() {
     Object* map = setup_map();
 
     Object* keys = map_keys(map);
-    print(keys);
     assert(is_list(keys));
     assert(length(keys) == length(map));
 
