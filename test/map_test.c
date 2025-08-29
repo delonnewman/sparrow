@@ -52,10 +52,19 @@ void test_map_keys() {
     }
 }
 
+void test_map_values() {
+    Object* map = setup_map();
+
+    Object* values = map_values(map);
+    assert(is_list(values));
+    assert(length(values) == length(values));
+}
+
 int main() {
   test_make_map();
   test_map_set_and_get();
   test_map_keys();
+  test_map_values();
 
   return EXIT_SUCCESS;
 }
