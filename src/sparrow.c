@@ -771,15 +771,6 @@ Bool is_equal(Object* object1, Object* object2) {
   return false;
 }
 
-static const Int INT_SEED    = 1234567890123456;
-static const Int FLOAT_SEED  = 3419872439573465;
-static const Int CHAR_SEED   = 4071399670174908;
-static const Int STRING_SEED = 7166631864999277;
-static const Int SYMBOL_SEED = 1776825442840913;
-static const Int CONS_SEED   = 7955625282532633;
-static const Int MAP_SEED    = 3272642184564944;
-static const Int ARRAY_SEED  = 2314678230668014;
-
 Int object_hash_code(Object* obj) {
   switch (obj->type) {
   case TYPE_BOOL:

@@ -46,10 +46,20 @@ typedef struct Object {
   struct Object* next;
 } Object;
 
+static const Int INT_SEED    = 1234567890123456;
+static const Int FLOAT_SEED  = 3419872439573465;
+static const Int CHAR_SEED   = 4071399670174908;
+static const Int STRING_SEED = 7166631864999277;
+static const Int SYMBOL_SEED = 1776825442840913;
+static const Int CONS_SEED   = 7955625282532633;
+static const Int MAP_SEED    = 3272642184564944;
+static const Int ARRAY_SEED  = 2314678230668014;
+
 Object* object_allocate();
 void object_destroy(Object* object);
 int object_inspect(char* buffer, Object* object);
 void object_copy(Object* target, Object* source);
+Int object_hash_code(Object* obj);
 
 Str type_name(Object* obj);
 void print(Object* obj);
@@ -112,7 +122,6 @@ Bool is_char(Object* obj);
 Bool is_string(Object* obj);
 Bool is_symbol(Object* obj);
 
-Int object_hash_code(Object* obj);
 Int string_hash(const Str string, Nat strlen);
 Int hash_combine(Int seed, Int hash);
 
