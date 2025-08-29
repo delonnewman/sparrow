@@ -114,6 +114,7 @@ Bool is_symbol(Object* obj);
 
 Int object_hash_code(Object* obj);
 Int string_hash(const Str string, Nat strlen);
+Int hash_combine(Int seed, Int hash);
 
 // Native to object conversions
 Bool bool_to_int(Object* obj);

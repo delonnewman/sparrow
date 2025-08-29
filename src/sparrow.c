@@ -1,5 +1,4 @@
 #include "sparrow.h"
-#include <stdio.h>
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
@@ -241,6 +240,7 @@ Object* object_string(Str value) {
 Object* object_symbol(Str value) {
   Object* object = object_allocate();
   object->type   = TYPE_SYMBOL;
+  object->length = strlen(value);
   object->ref    = malloc(strlen(value) + 1);
   strcpy(object->ref, value);
 
@@ -601,9 +601,9 @@ Bool is_map(Object* map) {
 
 void map_print(Object* array) {
   putchar('{');
-  for (Int i = 0; i < array->length; i++) {
+  for (Int i = 0; i < MAP_BUCKET_COUNT; i++) {
     print(array_at(array, i));
-    if (i < (array->length - 1)) {
+    if (i < (MAP_BUCKET_COUNT - 1)) {
       printf(", ");
     }
   }
@@ -732,18 +732,73 @@ Bool is_equal(Object* object1, Object* object2) {
   return false;
 }
 
+static const Int INT_SEED    = 1234567890123456;
+static const Int FLOAT_SEED  = 3419872439573465;
+static const Int CHAR_SEED   = 4071399670174908;
+static const Int STRING_SEED = 7166631864999277;
+static const Int SYMBOL_SEED = 1776825442840913;
+static const Int CONS_SEED   = 7955625282532633;
+static const Int MAP_SEED    = 3272642184564944;
+static const Int ARRAY_SEED  = 2314678230668014;
+
 Int object_hash_code(Object* obj) {
   switch (obj->type) {
+  case TYPE_BOOL:
+    return BOOL(obj);
+  case TYPE_INT:
+    return hash_combine(INT_SEED, INT(obj));
+  case TYPE_FLOAT:
+    return hash_combine(FLOAT_SEED, (Int)FLOAT(obj));
   case TYPE_SYMBOL:
+    return hash_combine(SYMBOL_SEED, string_hash(STR(obj), obj->length));
   case TYPE_STRING:
-    return string_hash(STR(obj), obj->length);
+    return hash_combine(STRING_SEED, string_hash(STR(obj), obj->length));
+  case TYPE_CHAR:
+    return hash_combine(CHAR_SEED, (Int)CHAR(obj));
+  case TYPE_CONS: {
+    if (is_pair(obj)) {
+      Int seed = CONS_SEED;
+      seed = hash_combine(seed, object_hash_code(pair_key(obj)));
+      seed = hash_combine(seed, object_hash_code(pair_value(obj)));
+      return seed;
+    }
+    Int seed = CONS_SEED;
+    Object* current = obj;
+    while (!is_empty(current)) {
+      seed = hash_combine(seed, object_hash_code(list_first(current)));
+      current = list_next(current);
+    }
+    return seed;
+  }
+  case TYPE_ARRAY: {
+    Int seed = ARRAY_SEED;
+    for (Int i = 0; i < obj->length; i++) {
+      seed = hash_combine(seed, object_hash_code(array_at(obj, i)));
+    }
+    return seed;
+  }
+  case TYPE_MAP: {
+    Int seed = MAP_SEED;
+    Object** storage = (Object**)obj->ref;
+    for (Int i = 0; i < MAP_BUCKET_COUNT; i++) {
+      Object* bucket = storage[i];
+      Object* current = bucket;
+      while (!is_empty(current)) {
+        Object* pair = list_first(current);
+        seed = hash_combine(seed, object_hash_code(pair_key(pair)));
+        seed = hash_combine(seed, object_hash_code(pair_value(pair)));
+        current = list_next(current);
+      }
+    }
+    return seed;
+  }
   default:
     fprintf(stderr, "TypeError: unknown hash code type '%s'\n", type_name(obj));
     exit(0);
   }
 }
 
-Int hash_combine(long seed, long hash) {
+Int hash_combine(Int seed, Int hash) {
   // a la boost, a la clojure
   seed ^= hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   return seed;
