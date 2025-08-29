@@ -635,13 +635,16 @@ Bool is_map(Object* map) {
   return IS_TYPE(map, TYPE_MAP);
 }
 
-void map_print(Object* array) {
+void map_print(Object* map) {
   putchar('{');
-  for (Int i = 0; i < MAP_BUCKET_COUNT; i++) {
-    print(array_at(array, i));
-    if (i < (MAP_BUCKET_COUNT - 1)) {
-      printf(", ");
-    }
+  Object* entries = map_entries(map);
+  Object* pair;
+  while (!is_empty(entries)) {
+    pair = list_first(entries);
+    print(pair_key(pair));
+    printf(" => ");
+    print(pair_value(pair));
+    entries = list_next(entries);
   }
   putchar('}');
 }
