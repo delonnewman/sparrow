@@ -712,8 +712,15 @@ Bool is_equal(Object* object1, Object* object2) {
       case TYPE_SYMBOL:
         return strcmp(STR(object1), STR(object2)) == 0;
       case TYPE_CONS:
+        if (is_pair(object1) != is_pair(object2)) {
+          return false;
+        } else if (is_pair(object1) && is_pair(object2)) {
+          return is_equal(pair_key(object1), pair_key(object2)) &&
+                 is_equal(pair_value(object1), pair_value(object2));
+        }
         return list_is_equal(object1, object2);
       case TYPE_ARRAY:
+      case TYPE_MAP:
         return array_is_equal(object1, object2);
       default:
         fprintf(stderr, "TypeError: unknown type '%s'\n", type_name(object1));
