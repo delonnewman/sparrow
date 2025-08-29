@@ -580,19 +580,12 @@ Object* map_get(Object* map, Object* key) {
 Object* map_keys(Object* map) {
   Object* list = list_empty();
 
-  printf("length(map) == %ld\n", map->length);
-
   Object* bucket;
-  Object** storage;
-  for (Int i = 0; i < map->length; i++) {
-    printf("%ld\n", i);
-    storage = (Object**)map->ref;
-    bucket = storage[i];
-    printf("length(bucket) == %ld\n", bucket->length);
+  for (Int i = 0; i < MAP_BUCKET_COUNT; i++) {
+    bucket = ((Object**)map->ref)[i];
     Object* current = bucket;
     Object* pair = list_first(current);
     while (!is_null(pair)) {
-      say(pair);
       list = list_cons(pair_key(pair), list);
       current = list_next(current);
       pair = list_first(current);

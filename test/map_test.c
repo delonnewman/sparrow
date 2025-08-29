@@ -44,8 +44,13 @@ void test_map_keys() {
     assert(is_list(keys));
     assert(length(keys) == length(map));
 
-    assert(is_equal(list_first(keys), object_string("a")));
-    assert(is_equal(list_first(list_next(keys)), object_string("b")));
+    Object* key;
+    Object* current = keys;
+    while (!is_empty(current)) {
+        key = list_first(current);
+        assert(!is_null(map_get(map, key)));
+        current = list_next(current);
+    }
 }
 
 int main() {
