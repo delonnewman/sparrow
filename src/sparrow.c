@@ -177,9 +177,8 @@ void print(Object* obj) {
   }
 }
 
-Object* OBJECT_NULL = NULL;
-
 Object* object_null() {
+  static Object* OBJECT_NULL = NULL;
   if (OBJECT_NULL != NULL) {
     return OBJECT_NULL;
   }
@@ -266,9 +265,8 @@ Bool is_symbol(Object* obj) {
   return IS_TYPE(obj, TYPE_SYMBOL);
 }
 
-Object* BOOL_TRUE = NULL;
-
 Object* object_true() {
+  static Object* BOOL_TRUE = NULL;
   if (BOOL_TRUE != NULL) {
     return BOOL_TRUE;
   }
@@ -283,9 +281,8 @@ Object* object_true() {
   return object;
 }
 
-Object* BOOL_FALSE = NULL;
-
 Object* object_false() {
+  static Object* BOOL_FALSE = NULL;
   if (BOOL_FALSE != NULL) {
     return BOOL_FALSE;
   }
