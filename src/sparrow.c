@@ -849,3 +849,89 @@ Int string_hash(const Str string, size_t strlen) {
   }
   return code;
 }
+
+void die(Str message) {
+  printf("Error: %s", message);
+  exit(1);
+}
+
+Str string_slice(Str string, Int start, Int end) {
+  if (start > end) die("Invalid slice");
+  Int length = (end - start) + 1;
+  Str slice = malloc(length);
+
+  for (Int i = 0; i < length; i++) {
+    slice[i] = string[start];
+    start++;
+  }
+
+  slice[length] = '\0';
+  return slice;
+}
+
+Reader* make_reader(Str stream) {
+  Reader* r = malloc(sizeof(Reader));
+
+  r->limit    = strlen(stream);
+  r->stream   = stream;
+  r->position = INIT_POS;
+  r->line     = INIT_LINE;
+  r->column   = INIT_COL;
+
+  return r;
+}
+
+Char reader_read(Reader* reader) {
+  if (reader->position > reader->limit) {
+    printf("ReaderError: EOF");
+    exit(1);
+  }
+
+  Char ch = reader->stream[reader->position];
+  reader->position++;
+
+  if (ch == '\n') {
+    reader->column = INIT_COL;
+    reader->line++;
+  } else {
+    reader->column++;
+  }
+
+  return ch;
+}
+
+void reader_skip(Reader* reader, Int n) {
+  reader->position += n;
+}
+
+Object* read_string(Object* string) {
+  Str str = STR(string);
+  Int length = string->length;
+  
+  for (Int i = 0; i < length; i++) {
+    Char c = str[i];
+    if (IS_WHITESPACE(c)) {
+      continue;
+    } else if (IS_DIGIT(c)) {
+      // read number
+      Int start = i;
+      while (IS_DIGIT(c)) {
+        i++;
+        c = str[i];
+      }
+      Int end = i;
+      Str slice = string_slice(str, start, end);
+      Int num = atol(slice);
+      return object_integer(num);
+    } else if (IS_OPEN_PAREN(c)) {
+      if (IS_CLOSE_PAREN(str[i + 1])) {
+        return list_empty();
+      } else {
+        
+      }
+    }
+  }
+
+  return string;
+}
+

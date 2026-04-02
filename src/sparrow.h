@@ -11,6 +11,11 @@
 #define TYPE_TAG_IS(O, T) (O->type == T)
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
+#define IS_DIGIT(X) (X > 47 && X < 58)
+#define IS_WHITESPACE(X) (X < 33)
+#define IS_OPEN_PAREN(X) (X == 40)
+#define IS_CLOSE_PAREN(X) (X == 41)
+
 #define INT(O) *((Int*)O->ref)
 #define FLOAT(O) *((Float*)O->ref)
 #define BOOL(O) *((Bool*)O->ref)
@@ -20,8 +25,8 @@
 typedef long Int;
 typedef size_t Nat;
 typedef double Float;
-typedef char* Str;
 typedef char Char;
+typedef Char* Str;
 typedef bool Bool;
 typedef void* Ref;
 
@@ -129,7 +134,25 @@ Int hash_combine(Int seed, Int hash);
 // Native to object conversions
 Bool bool_to_int(Object* obj);
 Object* int_to_bool(Bool);
+Str object_to_str(Object* obj);
 
 void say(Object* obj);
 
-Object* read_string (Object* str);
+Object* read_string(Object* str);
+
+// Reader
+typedef struct Reader {
+  Int limit;
+  Str stream;
+  Int position;
+  Int line;
+  Int column;
+} Reader;
+
+static const Int INIT_LINE = 1;
+static const Int INIT_COL = 0;
+static const Int INIT_POS = 0;
+
+Reader* make_reader(Str stream);
+Char reader_read(Reader* reader);
+void reader_skip(Reader* reader, Int n);
