@@ -11,11 +11,6 @@
 #define TYPE_TAG_IS(O, T) (O->type == T)
 #define IS_TYPE(O, T) IS_OBJECT(O) && TYPE_TAG_IS(O, T)
 
-#define IS_DIGIT(X) (X > 47 && X < 58)
-#define IS_WHITESPACE(X) (X < 33)
-#define IS_OPEN_PAREN(X) (X == 40)
-#define IS_CLOSE_PAREN(X) (X == 41)
-
 #define INT(O) *((Int*)O->ref)
 #define FLOAT(O) *((Float*)O->ref)
 #define BOOL(O) *((Bool*)O->ref)
@@ -138,9 +133,19 @@ Str object_to_str(Object* obj);
 
 void say(Object* obj);
 
-Object* read_string(Object* str);
-
 // Reader
+#define IS_DIGIT(X) (X > 47 && X < 58)
+#define IS_WHITESPACE(X) (X < 33 || X == 127)
+#define IS_OPEN_PAREN(X) (X == 40)
+#define IS_CLOSE_PAREN(X) (X == 41)
+
+// not equal to "(", ")", "'", "`"
+#define IS_SYMBOL_CHAR(X) (X != 40 && X != 41 && X != 39 && X != 96)
+
+static const char* NULL_STR = "null";
+
+Object* read_string(Str str);
+
 typedef struct Reader {
   Int limit;
   Str stream;

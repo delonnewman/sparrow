@@ -34,8 +34,14 @@ int main() {
   /* map_set(map, object_string("a"), object_float(3.4)); */
   /* say(map); */
 
-  say(read_string(object_string(" 123 ")));
-  say(read_string(object_string("()")));
+  say(object_null());
+  say(read_string(" 123 "));
+  say(read_string("()"));
+  say(read_string("<"));
+  say(read_string("*var*"));
+  say(read_string("null"));
+  say(read_string("true"));
+  say(read_string("false"));
 
   return EXIT_SUCCESS;
 }

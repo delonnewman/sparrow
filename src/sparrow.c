@@ -323,9 +323,8 @@ Object* pair_value(Object* pair) {
   return pair->next;
 }
 
-Object* EMPTY = NULL;
-
 Object* list_empty() {
+  static Object* EMPTY = NULL;
   if (EMPTY != NULL) {
     return EMPTY;
   }
@@ -901,9 +900,8 @@ void reader_skip(Reader* reader, Int n) {
   reader->position += n;
 }
 
-Object* read_string(Object* string) {
-  Str str = STR(string);
-  Int length = string->length;
+Object* read_string(Str str) {
+  Int length = strlen(str);
   
   for (Int i = 0; i < length; i++) {
     Char c = str[i];
@@ -920,6 +918,25 @@ Object* read_string(Object* string) {
       Str slice = string_slice(str, start, end);
       Int num = atol(slice);
       return object_integer(num);
+    } else if (IS_SYMBOL_CHAR(c)) {
+      // read symbol
+      Int start = i;
+      while (IS_SYMBOL_CHAR(c)) {
+        i++;
+        c = str[i];
+      }
+      Int end = i;
+      Str slice = string_slice(str, start, end);
+      if (strcmp(slice, NULL_STR) == 0) {
+        free(slice);
+        return object_null();
+      } else if (strcmp(slice, "true") == 0) {
+        free(slice);
+        return object_true();
+      } else if (strcmp(slice, "false") == 0) {
+        return object_false();
+      }
+      return object_symbol(slice);
     } else if (IS_OPEN_PAREN(c)) {
       if (IS_CLOSE_PAREN(str[i + 1])) {
         return list_empty();
@@ -929,6 +946,6 @@ Object* read_string(Object* string) {
     }
   }
 
-  return string;
+  return object_null();
 }
 
