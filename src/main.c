@@ -36,6 +36,7 @@ int main() {
 
   say(object_null());
   say(read_string(" 123 "));
+  say(read_string(" 3.1459 "));
   say(read_string("()"));
   say(read_string("<"));
   say(read_string("*var*"));

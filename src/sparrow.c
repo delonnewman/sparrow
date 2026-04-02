@@ -909,13 +909,19 @@ Object* read_string(Str str) {
       continue;
     } else if (IS_DIGIT(c)) {
       // read number
+      Bool is_float = 0;
       Int start = i;
-      while (IS_DIGIT(c)) {
+      while (IS_DIGIT(c) || c == '.') {
         i++;
+        if (c == '.') is_float = 1;
         c = str[i];
       }
       Int end = i;
       Str slice = string_slice(str, start, end);
+      if (is_float) {
+        Float num = atof(slice);
+        return object_float(num);
+      }
       Int num = atol(slice);
       return object_integer(num);
     } else if (IS_STR_DELIM(c)) {
