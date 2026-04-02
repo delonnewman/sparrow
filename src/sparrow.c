@@ -918,6 +918,16 @@ Object* read_string(Str str) {
       Str slice = string_slice(str, start, end);
       Int num = atol(slice);
       return object_integer(num);
+    } else if (IS_STR_DELIM(c)) {
+      // read string
+      Int start = i;
+      do {
+        i++;
+        c = str[i];
+      } while (!IS_STR_DELIM(c));
+      Int end = i;
+      Str slice = string_slice(str, start, end);
+      return object_string(slice);
     } else if (IS_SYMBOL_CHAR(c)) {
       // read symbol
       Int start = i;

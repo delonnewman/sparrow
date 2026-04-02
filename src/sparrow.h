@@ -136,11 +136,13 @@ void say(Object* obj);
 // Reader
 #define IS_DIGIT(X) (X > 47 && X < 58)
 #define IS_WHITESPACE(X) (X < 33 || X == 127)
-#define IS_OPEN_PAREN(X) (X == 40)
-#define IS_CLOSE_PAREN(X) (X == 41)
 
-// not equal to "(", ")", "'", "`"
-#define IS_SYMBOL_CHAR(X) (X != 40 && X != 41 && X != 39 && X != 96)
+#define IS_OPEN_PAREN(X) (X == '(')
+#define IS_CLOSE_PAREN(X) (X == ')')
+
+#define IS_SYMBOL_CHAR(X) (X != '(' && X != ')' && X != '\'' && X != '`')
+
+#define IS_STR_DELIM(X) (X == '"')
 
 static const char* NULL_STR = "null";
 

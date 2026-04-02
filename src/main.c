@@ -42,6 +42,7 @@ int main() {
   say(read_string("null"));
   say(read_string("true"));
   say(read_string("false"));
+  say(read_string("\"Hi!\""));
 
   return EXIT_SUCCESS;
 }
