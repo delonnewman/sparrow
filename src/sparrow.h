@@ -69,6 +69,7 @@ Object* object_integer(Int value);
 Object* object_char(Char value);
 Object* object_float(Float value);
 Object* object_string(Str value);
+Object* object_string_with_length(Str value, Int length);
 Object* object_symbol(Str value);
 Object* object_true();
 Object* object_false();
@@ -130,3 +131,5 @@ Bool bool_to_int(Object* obj);
 Object* int_to_bool(Bool);
 
 void say(Object* obj);
+
+Object* read_string (Object* str);

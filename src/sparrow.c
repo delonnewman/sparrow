@@ -1,4 +1,5 @@
 #include "sparrow.h"
+#include <string.h>
 
 Object* object_allocate() {
   Object* object = malloc(sizeof(Object));
@@ -228,10 +229,16 @@ Object* object_float(Float value) {
 }
 
 Object* object_string(Str value) {
+  Int length = strlen(value);
+
+  return object_string_with_length(value, length);
+}
+
+Object* object_string_with_length (Str value, Int length) {
   Object* object  = object_allocate();
   object->type    = TYPE_STRING;
-  object->length  = strlen(value);
-  object->ref     = malloc(strlen(value) + 1);
+  object->length  = length;
+  object->ref     = malloc(length + 1);
   strcpy(object->ref, value);
 
   return object;
@@ -450,9 +457,8 @@ Object* int_to_bool(Bool value) {
 Object* make_array(Nat size) {
   Object* object  = object_allocate();
   object->type    = TYPE_ARRAY;
-
-  object->ref    = malloc(sizeof(Object*) * size);
-  object->length = size;
+  object->ref     = malloc(sizeof(Object*) * size);
+  object->length  = size;
 
   return object;
 }
