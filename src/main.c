@@ -44,6 +44,9 @@ int main() {
   say(read_string("true"));
   say(read_string("false"));
   say(read_string("\"Hi!\""));
+  say(read_string("\"\""));
+  say(read_string("\" \""));
+  say(read_string("(1 2 3)"));
 
   return EXIT_SUCCESS;
 }

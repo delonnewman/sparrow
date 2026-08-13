@@ -925,15 +925,19 @@ Object* read_string(Str str) {
       Int num = atol(slice);
       return object_integer(num);
     } else if (IS_STR_DELIM(c)) {
-      // read string
-      Int start = i;
-      do {
-        i++;
-        c = str[i];
-      } while (!IS_STR_DELIM(c));
-      Int end = i;
-      Str slice = string_slice(str, start, end);
-      return object_string(slice);
+      if (IS_STR_DELIM(str[i + 1])) {
+        return object_string(""); // TODO: add empty string
+      } else {
+        // read string
+        Int start = i;
+        do {
+          i++;
+          c = str[i];
+        } while (!IS_STR_DELIM(c));
+        Int end = i;
+        Str slice = string_slice(str, start + 1, end - 1);
+        return object_string(slice);
+      }
     } else if (IS_SYMBOL_CHAR(c)) {
       // read symbol
       Int start = i;
