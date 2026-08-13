@@ -962,6 +962,7 @@ Object* read_string(Str str) {
         return list_empty();
       } else {
         // TODO
+        return list_empty();
       }
     }
   }
